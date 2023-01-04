@@ -13,7 +13,6 @@ export default class AddIngredient extends React.Component{
     }
 
     handleSubmit(event) {
-        //alert(this.state.unit_id+ " " + this.state.amount);
         event.preventDefault();
         const newIngredient={
             id:0,
