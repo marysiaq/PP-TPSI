@@ -1,10 +1,11 @@
-import logo from './logo.svg';
+
 import './App.css';
-import Units from './components/Units';
+import Categories from './components/Categories';
+import AddRecipe from './components/AddRecipe';
 
 function App() {
   return (
-    <Units></Units>
+       <AddRecipe></AddRecipe>
   );
 }
 

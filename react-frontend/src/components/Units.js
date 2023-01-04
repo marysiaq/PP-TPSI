@@ -1,9 +1,12 @@
 
 import React from "react";
 export default class Units extends React.Component{
-    state = {
+    constructor(props){
+      super(props);
+      this.state = {
         units: []
     };
+    }
     
     async componentDidMount() {
         const response = await fetch('/ingredient/units');
@@ -11,14 +14,11 @@ export default class Units extends React.Component{
         this.setState({units: body});
       }
   
-    render() {
-        const {units} = this.state;
+    render() {  
         return (
-            <select>
-                {units.map(unit =>
-                  <option key={unit.id} value={unit.id}>
-                    {unit.name}
-                  </option>
+            <select value={this.props.value} onChange={this.props.onChangeValue}>
+                {this.state.units.map(unit =>
+                    <option key={unit.id} value={unit.id}>{unit.name}</option>
               )}
             </select >
             );
