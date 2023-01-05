@@ -2,12 +2,12 @@
 import React from "react";
 import Units from "./Units";
 export default class AddIngredient extends React.Component{
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         this.state={
             amount: 0,
             name: "",
-            unit_id:2
+            unit_id:1,
          }
          this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -23,16 +23,17 @@ export default class AddIngredient extends React.Component{
             },
             amount:this.state.amount
         }
-        fetch('/ingredient/create',{method:"POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(newIngredient)}).then(()=>{
-            console.log("New ingredient added!")
-        })
-        
+       fetch('/ingredient/create',{method:"POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(newIngredient)}).then(response => response.json())
+       .then(data => this.props.setNewIngredientId(data));
+       this.setState({name:"",unit_id:1,amount:0});
+       
     }
 
     render() {
     
         return (
-            <form onSubmit={this.handleSubmit} >
+            
+            <form onSubmit={this.handleSubmit}>
                 <label>
                 Nazwa:
                     <input type="text"
@@ -50,7 +51,7 @@ export default class AddIngredient extends React.Component{
                     <Units value={this.state.unit_id}
                         onChangeValue={(event) => this.setState({unit_id:event.target.value})}></Units>
                 </label>
-                <input type="submit"/>
+                <input type="submit" value="Dodaj"/>
             </form>
             
             );

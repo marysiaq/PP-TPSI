@@ -6,7 +6,7 @@ export default class Categories extends React.Component {
           categories: [],
 
       };
-        this.handleChange=this.handleChange.bind(this)
+    
       }
       async componentDidMount() {
         const response = await fetch('/recipe/categories');
@@ -16,11 +16,12 @@ export default class Categories extends React.Component {
       render() {  
         return (
             <div>
+              <h3>Kategorie:</h3>
               {this.state.categories.map((category) => (
-                  <label key={category.id}>
-                    <input type="checkbox" checked={this.props.value.includes(category.id)} onChange={this.props.onChangeValue} value={category.id} /> 
+                  <div key={category.id}><label >
+                  <input type="checkbox" checked={this.props.value.includes(category.id)} onChange={this.props.onChangeValue} value={category.id} />
                   {category.name}
-              </label> 
+                </label><br /></div>
               ))}
             </div >
             );

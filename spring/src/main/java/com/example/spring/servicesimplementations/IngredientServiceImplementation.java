@@ -15,4 +15,19 @@ public class IngredientServiceImplementation implements IngredientService {
     public void saveIngredient(Ingredient ingredient) {
         ingredientRepository.save(ingredient);
     }
+
+    @Override
+    public Long createIngredientReturnId(Ingredient ingredient) {
+        return ingredientRepository.save(ingredient).getId();
+    }
+
+    @Override
+    public Ingredient getIngredientById(Long id) {
+        return ingredientRepository.findById(id).orElseThrow();
+    }
+
+    @Override
+    public void deleteIngredientById(Long id) {
+       ingredientRepository.deleteById(id);
+    }
 }
