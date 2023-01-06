@@ -8,9 +8,10 @@ export default class AddRecipe extends React.Component{
         super();
         this.state={
             categories_id:[1,3],
-            ingredients:[1,2],
+            ingredients:[1,2,39],
             showIngredientForm:false,
-            buttonDisabled:false
+            buttonDisabled:false,
+            ingredients_details:[]
             
          }
          this.handleSubmit = this.handleSubmit.bind(this);
@@ -18,13 +19,17 @@ export default class AddRecipe extends React.Component{
          this.showAddIngredientForm = this.showAddIngredientForm.bind(this);
          this.cancelAddIngredient=this.cancelAddIngredient.bind(this);
          this.setNewIngredientId=this.setNewIngredientId.bind(this);
+         this.updateIngredients=this.updateIngredients.bind(this);
+         this.handleIngredientDelete = this.handleIngredientDelete.bind(this);
+         this.onIngredientUpdate = this.onIngredientUpdate.bind(this);
+    }
+    componentDidMount(){
+        this.updateIngredients();
     }
 
     handleSubmit(event) {
         alert(this.state.categories_id);
         event.preventDefault();
-        
-        
     }
     handleOnChangeCategories(e){
         let newArray = this.state.categories_id.slice();
@@ -39,13 +44,52 @@ export default class AddRecipe extends React.Component{
     cancelAddIngredient(){
         this.setState({showIngredientForm:false, buttonDisabled:false});
     }
-    setNewIngredientId(newid){
+    async setNewIngredientId(newid){
         console.log(newid);
         let newIng = this.state.ingredients.slice();
         newIng.push(newid);
-        this.setState({ingredients:newIng});
+
+        const response = await fetch('/ingredient/list',{method: "POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(newIng)});
+        const body =await  response.json();  
+        console.log(body);
+
+
+        this.setState({ingredients:newIng,ingredients_details:body});
         this.cancelAddIngredient();
+        
     }
+    async updateIngredients(){
+        const response = await fetch('/ingredient/list',{method: "POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(this.state.ingredients)});
+        const body =await  response.json();  
+        console.log(body);
+        this.setState({ingredients_details: body});
+      }
+   async handleIngredientDelete(event){
+        if(!window.confirm("Czy napewno chcesz usunąć ten składnik?"))return;
+        const response = await fetch('/ingredient/'+event.target.value,{method: "DELETE"});
+        console.log(response)
+
+        let newArray = this.state.ingredients.slice();
+        newArray=newArray.filter((item) => item !== parseInt(event.target.value));
+
+        
+        
+        const response2 = await fetch('/ingredient/list',{method: "POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(this.state.ingredients)});
+        const body =await  response2.json();  
+        console.log(body);
+        this.setState({ingredients:newArray, ingredients_details:body})
+
+    }
+    onIngredientUpdate(updatedIngredient){
+        let newIng = this.state.ingredients_details.slice();
+        this.setState({
+            ingredients_details: newIng.map(el => {if(el.id===updatedIngredient.id)return updatedIngredient;
+            return el;})
+        });
+       
+    }
+
+      
 
     render() {
     
@@ -53,13 +97,19 @@ export default class AddRecipe extends React.Component{
             <div>
                 <div >
                     <h3>Składniki:</h3>
-                    <ShowIngredients ingredients={this.state.ingredients}></ShowIngredients>
+                        <ShowIngredients ingredients={this.state.ingredients_details} 
+                        onDelete={this.handleIngredientDelete}
+                        onUpdate={this.onIngredientUpdate}>
+
+                        </ShowIngredients>
 
                     <button onClick={this.showAddIngredientForm}  disabled={this.state.buttonDisabled}>Dodaj składnik</button>
                     {this.state.showIngredientForm  &&
                         <div>
                             <AddIngredient
-                                setNewIngredientId={this.setNewIngredientId}></AddIngredient>
+                                setNewIngredientId={this.setNewIngredientId}>
+
+                                </AddIngredient>
                             <button onClick={this.cancelAddIngredient}>Anuluj</button>
                         </div>
                     }

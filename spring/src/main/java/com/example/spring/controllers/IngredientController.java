@@ -29,10 +29,19 @@ public class IngredientController {
     public Ingredient getIngredient(@PathVariable long id){
         return ingredientService.getIngredientById(id);
     }
+    @PostMapping("/list" )
+    public List<Ingredient> getIngredients(@RequestBody List<Long> ids){
+        return ingredientService.getIngredients(ids);
+    }
 
     @DeleteMapping("/{id}")
     public void deleteIngredient(@PathVariable long id) {
         ingredientService.deleteIngredientById(id);
+    }
+
+    @PutMapping("/")
+    public void updateIngredient(@RequestBody Ingredient ingredient ) {
+        ingredientService.saveIngredient(ingredient);
     }
 
     @PostMapping("/create")

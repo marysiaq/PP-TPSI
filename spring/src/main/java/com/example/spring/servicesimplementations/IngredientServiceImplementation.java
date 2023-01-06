@@ -6,6 +6,8 @@ import com.example.spring.services.IngredientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service("ingredientService")
 public class IngredientServiceImplementation implements IngredientService {
     @Autowired
@@ -29,5 +31,9 @@ public class IngredientServiceImplementation implements IngredientService {
     @Override
     public void deleteIngredientById(Long id) {
        ingredientRepository.deleteById(id);
+    }
+    @Override
+    public List<Ingredient> getIngredients(List<Long> id) {
+        return ingredientRepository.findByIdIn(id);
     }
 }
