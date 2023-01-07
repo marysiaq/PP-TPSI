@@ -3,15 +3,22 @@ import React from "react";
 import Categories from "./Categories";
 import AddIngredient from "./AddIngredient";
 import ShowIngredients from "./ShowIngredients";
+import DifficultyLevels from "./DifficultyLevels";
 export default class AddRecipe extends React.Component{
     constructor(){
         super();
         this.state={
             categories_id:[1,3],
-            ingredients:[1,2,39],
+            ingredients:[26,27,39],
             showIngredientForm:false,
             buttonDisabled:false,
-            ingredients_details:[]
+            ingredients_details:[],
+            difficulty_id:2,
+            recipe_name:"abcd",
+            preparation:"wesadf adf a adfs ads as ads as d asd adsf ds sdfsdfadsfd asd fasdf sdf adsf sad asdf a fsd fs asd as d as sd ads a fds sa dsaf a",
+            prep_time:0,
+            for_Vegans:false,
+            portions:1
             
          }
          this.handleSubmit = this.handleSubmit.bind(this);
@@ -22,14 +29,54 @@ export default class AddRecipe extends React.Component{
          this.updateIngredients=this.updateIngredients.bind(this);
          this.handleIngredientDelete = this.handleIngredientDelete.bind(this);
          this.onIngredientUpdate = this.onIngredientUpdate.bind(this);
+         this.handleOnChangeDifficulty = this.handleOnChangeDifficulty.bind(this);
     }
     componentDidMount(){
         this.updateIngredients();
     }
 
     handleSubmit(event) {
-        alert(this.state.categories_id);
         event.preventDefault();
+        const current = new Date();
+        const date = `${current.getFullYear()}-${current.getMonth()+1}-${current.getDate()}`;
+        alert(date);
+        let recipe={
+            id:0,
+            dateAdded:current,
+            for_Vegans:this.state.for_Vegans,
+            name:this.state.recipe_name,
+            portions:parseInt(this.state.portions),
+            preparation:this.state.preparation,
+            preparationTime:parseInt(this.state.prep_time),
+            ingredients:[],
+            categories:[],
+            difficulty:{id:this.state.difficulty_id, level:""}
+        }
+        this.state.ingredients.forEach(el=> {
+            recipe.ingredients.push({
+                id:el,
+                name:"s",
+                amount:0,
+                unit:{
+                    id: 0,
+                    name: "s"
+                }
+            });
+        });
+
+        this.state.categories_id.forEach(el=> {
+            recipe.categories.push(
+                {
+                    id: el,
+                    name: "s"
+                }
+            );
+        });
+        console.log(recipe);
+        fetch('/recipe/create',{method:"POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(recipe)}).then(response => console.log(response));
+
+
+
     }
     handleOnChangeCategories(e){
         let newArray = this.state.categories_id.slice();
@@ -87,9 +134,13 @@ export default class AddRecipe extends React.Component{
             return el;})
         });
        
+        
+    }
+    handleOnChangeDifficulty(event){
+        console.log(event.target.value)
+        this.setState({difficulty_id:parseInt(event.target.value)});
     }
 
-      
 
     render() {
     
@@ -118,6 +169,34 @@ export default class AddRecipe extends React.Component{
                 
                 <Categories value={this.state.categories_id}
                              onChangeValue={this.handleOnChangeCategories}></Categories>
+
+                <DifficultyLevels value={this.state.difficulty_id}
+                             onChangeValue={this.handleOnChangeDifficulty}></DifficultyLevels>
+
+                <label>
+                    <h3>Nazwa:</h3>   
+                    <input type="text" value={this.state.recipe_name} onChange={(e) => this.setState({recipe_name: e.target.value})}/>
+                </label> 
+
+                <label>
+                    <h3>Przygotowanie:</h3>   
+                    <textarea cols="50" rows="20" width="auto" height="auto" value={this.state.preparation} onChange={(e) => this.setState({preparation: e.target.value})}></textarea>
+                </label> 
+
+                <label>
+                    <h3>Czas przygotowania:</h3>   
+                    <input type="number" min="1"  value={this.state.prep_time} onChange={(e) => this.setState({prep_time: e.target.value})}/>
+                </label> 
+                <label>
+                    <h3>Ilość porcji:</h3>   
+                    <input type="number" min="1"  value={this.state.portions} onChange={(e) => this.setState({portions: e.target.value})}/>
+                </label>
+                <label>
+                    <h3>Odpowiedni dla vegan: <input type="checkbox"  value={this.state.for_Vegans} onChange={(e) => this.setState({for_Vegans: e.target.value})}/></h3>   
+                </label> 
+
+                
+
                 <input type="submit"/>
             </form>
             

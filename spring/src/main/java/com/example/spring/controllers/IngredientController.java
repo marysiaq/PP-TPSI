@@ -9,8 +9,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -40,17 +42,15 @@ public class IngredientController {
     }
 
     @PutMapping("/")
-    public void updateIngredient(@RequestBody Ingredient ingredient ) {
+    public void updateIngredient(@Valid @RequestBody Ingredient ingredient , BindingResult result) {
         ingredientService.saveIngredient(ingredient);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Object> createIngredientReturnId (@RequestBody Ingredient ingredient){
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Last-Modified", "Mon, 18 Jul 2016 02:36:04 GMT");//standardowy nagłówek
-        headers.add("CreateIngredientReturnId", "My custom header value");//własny nagłówek
+    public ResponseEntity<Object> createIngredientReturnId (@Valid @RequestBody Ingredient ingredient, BindingResult result){
+        
         var id = ingredientService.createIngredientReturnId(ingredient);
-        return new ResponseEntity(id, headers, HttpStatus.OK);
+        return new ResponseEntity(id,  HttpStatus.OK);
 
     }
 }

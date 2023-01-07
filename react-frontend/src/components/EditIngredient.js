@@ -20,8 +20,6 @@ export default function EditIngredient(props){
         }
         console.log(updatedIngredient);
        fetch('/ingredient/',{method:"PUT",headers:{"Content-Type":"application/json"}, body:JSON.stringify(updatedIngredient)}).then(response => console.log(response))
-       //.then(data => this.props.setNewIngredientId(data));
-       //this.setState({name:"",unit_id:1,amount:0});
        
        props.onUpdate(updatedIngredient);
        props.onCancel();
