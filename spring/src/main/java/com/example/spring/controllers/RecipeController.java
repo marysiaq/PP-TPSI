@@ -1,15 +1,17 @@
 package com.example.spring.controllers;
 
-import DTO.RecipeDTO;
+import DTO.EmptyJSON;
+import DTO.CustomFieldError;
+import DTO.FieldErrorResponse;
 import com.example.spring.models.Category;
 import com.example.spring.models.Difficulty;
 import com.example.spring.models.Recipe;
-import com.example.spring.repositories.RecipeReposiory;
 import com.example.spring.services.CategoryService;
 import com.example.spring.services.DifficultyService;
 import com.example.spring.services.RecipeService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +32,21 @@ public class RecipeController {
 
     private final ModelMapper modelMapper = new ModelMapper();
     @PostMapping("/create")
-    public void createRecipe (@Valid @RequestBody Recipe recipe, BindingResult result){
+    public ResponseEntity<Object> createRecipe (@Valid @RequestBody Recipe recipe, BindingResult result){
+        if(result.hasErrors()){
+            var List = result.getFieldErrors().stream().
+                    map(f->new CustomFieldError(f.getField(), f.getDefaultMessage())).
+                    collect(Collectors.toList());
+            FieldErrorResponse fieldErrorResponse = new FieldErrorResponse();
+            fieldErrorResponse.setFieldErrors(List);
+
+            return new ResponseEntity(fieldErrorResponse, HttpStatus.NOT_ACCEPTABLE);
+        }
 
         recipeService.createRecipe(recipe);
+
+        return new ResponseEntity(new EmptyJSON("ok"),  HttpStatus.OK);
+
 
     }
     @GetMapping("/categories")

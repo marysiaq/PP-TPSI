@@ -15,12 +15,12 @@ public class Ingredient {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
-    @NotEmpty
+    @NotEmpty(message = "Nazwa nie może być pusta!")
     private String name;
-    @NotNull
+    @NotNull(message = "Należy wybrać jednostkę!")
     @ManyToOne
     private Unit unit;
-    @Min(0)
+    @Min(value = 1,message = "Ilość powinna wynosić co najmniej 1!")
     private float amount;
     public Ingredient(String name, Unit unit, float amount) {
         this.name = name;

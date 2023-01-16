@@ -9,7 +9,7 @@ export default class AddRecipe extends React.Component{
         super();
         this.state={
             categories_id:[1,3],
-            ingredients:[26,27,39],
+            ingredients:[],
             showIngredientForm:false,
             buttonDisabled:false,
             ingredients_details:[],
@@ -18,7 +18,16 @@ export default class AddRecipe extends React.Component{
             preparation:"wesadf adf a adfs ads as ads as d asd adsf ds sdfsdfadsfd asd fasdf sdf adsf sad asdf a fsd fs asd as d as sd ads a fds sa dsaf a",
             prep_time:0,
             for_Vegans:false,
-            portions:1
+            portions:1,
+
+            categories_error:"",
+            name_error:"",
+            prep_time_error:"",
+            preparation_error:"",
+            portions_error:"",
+            difficulty_error:"",
+            ingredients_error:"",
+            error_message:""
             
          }
          this.handleSubmit = this.handleSubmit.bind(this);
@@ -38,8 +47,8 @@ export default class AddRecipe extends React.Component{
     handleSubmit(event) {
         event.preventDefault();
         const current = new Date();
-        const date = `${current.getFullYear()}-${current.getMonth()+1}-${current.getDate()}`;
-        alert(date);
+        //const date = `${current.getFullYear()}-${current.getMonth()+1}-${current.getDate()}`;
+        //alert(date);
         let recipe={
             id:0,
             dateAdded:current,
@@ -73,8 +82,41 @@ export default class AddRecipe extends React.Component{
             );
         });
         console.log(recipe);
-        fetch('/recipe/create',{method:"POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(recipe)}).then(response => console.log(response));
-
+        fetch('/recipe/create',{method:"POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(recipe)})
+            .then((response) =>
+                response.json()
+            )
+            .then((data) => {
+                if(data.fieldErrors){
+                    data.fieldErrors.forEach(fieldError => {
+                        if(fieldError.field === 'name'){
+                            this.setState({name_error:fieldError.message})
+                     }
+                        if(fieldError.field === 'preparation'){
+                        this.setState({preparation_error:fieldError.message})
+                        }
+                        if(fieldError.field === 'preparationTime'){
+                            this.setState({prep_time_error:fieldError.message})
+                        }
+                        if(fieldError.field === 'categories'){
+                            this.setState({categories_error:fieldError.message})
+                        }
+                        if(fieldError.field === 'ingredients'){
+                            this.setState({ingredients_error:fieldError.message})
+                        }
+                        if(fieldError.field === 'difficulty'){
+                            this.setState({difficulty_error:fieldError.message})
+                        }
+                        if(fieldError.field === 'portions'){
+                            this.setState({portions_error:fieldError.message})
+                        }
+                    
+                    });
+                }
+                
+           })
+            .catch((err) => alert(err));
+        
 
 
     }
@@ -164,40 +206,59 @@ export default class AddRecipe extends React.Component{
                             <button onClick={this.cancelAddIngredient}>Anuluj</button>
                         </div>
                     }
+                    <br/>
+                    <span > {this.state.ingredients_error}</span>
                 </div>
             <form onSubmit={this.handleSubmit} >
                 
                 <Categories value={this.state.categories_id}
                              onChangeValue={this.handleOnChangeCategories}></Categories>
+                <span > {this.state.categories_error} </span>
 
                 <DifficultyLevels value={this.state.difficulty_id}
                              onChangeValue={this.handleOnChangeDifficulty}></DifficultyLevels>
-
+                <br/>
+                <span > {this.state.difficulty_error} </span>
                 <label>
                     <h3>Nazwa:</h3>   
                     <input type="text" value={this.state.recipe_name} onChange={(e) => this.setState({recipe_name: e.target.value})}/>
+                    <br/>
+                   <span > {this.state.name_error} </span>
                 </label> 
 
                 <label>
                     <h3>Przygotowanie:</h3>   
                     <textarea cols="50" rows="20" width="auto" height="auto" value={this.state.preparation} onChange={(e) => this.setState({preparation: e.target.value})}></textarea>
+                    <br/>
+                    <span > {this.state.preparation_error} </span>
                 </label> 
 
                 <label>
                     <h3>Czas przygotowania:</h3>   
                     <input type="number" min="1"  value={this.state.prep_time} onChange={(e) => this.setState({prep_time: e.target.value})}/>
+                    <br/>
+                    <span > {this.state.prep_time_error} </span>
                 </label> 
                 <label>
                     <h3>Ilość porcji:</h3>   
                     <input type="number" min="1"  value={this.state.portions} onChange={(e) => this.setState({portions: e.target.value})}/>
+                    <br/>
+                    <span > {this.state.portions_error} </span>
                 </label>
                 <label>
                     <h3>Odpowiedni dla vegan: <input type="checkbox"  value={this.state.for_Vegans} onChange={(e) => this.setState({for_Vegans: e.target.value})}/></h3>   
                 </label> 
+                <div>
+                <label>
+                    <h3>Zdjęcie:<input value={this.state.file} onChange={(e) => this.setState({file: e.target.value})} type="file" accept="image/png, image/jpeg"/></h3>
+                </label>
+                </div>
 
                 
 
                 <input type="submit"/>
+                <br/>
+                <span > {this.state.error_message} </span>
             </form>
             
             </div>

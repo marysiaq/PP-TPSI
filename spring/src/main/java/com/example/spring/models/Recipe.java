@@ -24,21 +24,21 @@ public class Recipe {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
     @NotEmpty
-    @Size(min=3, max=200)
+    @Size(min=3, max=200, message = "Długość nazwy musi wynosić od 3 do 200 znaków!")
     private String name;
     @NotEmpty
-    @Size(min=3, max=2000)
+    @Size(min=3, max=2000,message = "Ilość znaków musi wynosić od 3 do 2000!")
     private String preparation;
-    @Size(min=1, max=30)
+    @Size(min=1, max=30,message = "Ilość składników musi wynosić od 1 do 30!")
     @OneToMany
     private List<Ingredient> ingredients;
-    @Min(5)@Max(240)
+    @Min(value=5 ,message ="Czas przygotowania musi wynosić co najmniej 5 min!")@Max(value=240,message ="Czas przygotowania musi wynosić co najwyżej 240 min!")
     @JoinColumn(name="preparation_time")
     private int preparationTime;//minutes
-    @NotNull
+    @NotNull(message = "Należy wybrać poziom trudności!")
     @ManyToOne
     private Difficulty difficulty;
-    @Size(min=1, max=8)
+    @Size(min=1, max=8,message = "Należy wybrać od 1 do 8 kategorii!")
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Category> categories;
     @JoinColumn(name="for_Vegans")
@@ -50,6 +50,10 @@ public class Recipe {
     @JoinColumn(name="fdate_Added")
     @DateTimeFormat(iso=DateTimeFormat.ISO.DATE)
     private LocalDate dateAdded;
+
+   // @Lob
+    //@Column(columnDefinition="blob")
+    //private byte[] photoContent;
 
 
 
