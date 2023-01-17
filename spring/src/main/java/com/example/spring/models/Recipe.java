@@ -51,9 +51,21 @@ public class Recipe {
     @DateTimeFormat(iso=DateTimeFormat.ISO.DATE)
     private LocalDate dateAdded;
 
-   // @Lob
-    //@Column(columnDefinition="blob")
-    //private byte[] photoContent;
+    @OneToOne
+    private ImageFile photo;
+
+    public Recipe(Long id,String name, String preparation, List<Ingredient> ingredients, int preparationTime, Difficulty difficulty, Set<Category> categories, boolean forVegans, int portions , LocalDate dateAdded){
+        this.id = id;
+        this.name = name;
+        this.preparation = preparation;
+        this.ingredients = ingredients;
+        this.preparationTime = preparationTime;
+        this.difficulty = difficulty;
+        this.categories = categories;
+        this.forVegans = forVegans;
+        this.portions = portions;
+        this.dateAdded = dateAdded;
+    }
 
 
 

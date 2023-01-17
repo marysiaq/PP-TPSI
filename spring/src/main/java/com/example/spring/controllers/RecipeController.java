@@ -3,6 +3,7 @@ package com.example.spring.controllers;
 import DTO.EmptyJSON;
 import DTO.CustomFieldError;
 import DTO.FieldErrorResponse;
+import DTO.RecipeDTO;
 import com.example.spring.models.Category;
 import com.example.spring.models.Difficulty;
 import com.example.spring.models.Recipe;
@@ -12,9 +13,11 @@ import com.example.spring.services.RecipeService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -57,6 +60,14 @@ public class RecipeController {
     @GetMapping("/difficulty")
     public List<Difficulty> getDifficultyLevels(){
         return  difficultyService.getDifficultyLevels();
+    }
+
+    @PostMapping(value = "/uploadFile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity uploadFile(@RequestParam MultipartFile file) {
+        System.out.println(file.getName());
+        System.out.println(file.isEmpty());
+        System.out.println(file.getContentType());
+        return ResponseEntity.ok().build();
     }
 
 
