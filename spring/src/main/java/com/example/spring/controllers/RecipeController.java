@@ -1,14 +1,13 @@
 package com.example.spring.controllers;
 
-import DTO.EmptyJSON;
-import DTO.CustomFieldError;
-import DTO.FieldErrorResponse;
-import DTO.RecipeDTO;
+import DTO.*;
 import com.example.spring.models.Category;
 import com.example.spring.models.Difficulty;
+import com.example.spring.models.ImageFile;
 import com.example.spring.models.Recipe;
 import com.example.spring.services.CategoryService;
 import com.example.spring.services.DifficultyService;
+import com.example.spring.services.ImageFileService;
 import com.example.spring.services.RecipeService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +32,9 @@ public class RecipeController {
     private DifficultyService difficultyService;
     @Autowired
     private RecipeService recipeService;
+
+    @Autowired
+    private ImageFileService imageFileService;
 
     private final ModelMapper modelMapper = new ModelMapper();
     @PostMapping("/create")
@@ -63,12 +66,20 @@ public class RecipeController {
     }
 
     @PostMapping(value = "/uploadFile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity uploadFile(@RequestParam MultipartFile file) {
-        System.out.println(file.getName());
-        System.out.println(file.isEmpty());
-        System.out.println(file.getContentType());
-        return ResponseEntity.ok().build();
+    public ResponseEntity uploadFile(@RequestParam MultipartFile file) throws IOException {
+        ImageFile img = new ImageFile(file.getOriginalFilename(),file.getBytes());
+        var id = imageFileService.createFileReturnId(new ImageFile(null,file.getOriginalFilename(),file.getBytes()));
+        IdClass idClass = new IdClass(id);
+        return new ResponseEntity(idClass,  HttpStatus.OK);
+
     }
-
-
+    @GetMapping("/getFile/{id}" )
+    public  ImageFile getImage(@PathVariable long id){
+        return imageFileService.getImageById(id);
+    }
+    @PutMapping(value="/updateFile/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE )
+    public  ResponseEntity updateImage(@PathVariable long id,@RequestParam MultipartFile file) throws IOException {
+        imageFileService.updateImage(new ImageFile(id,file.getOriginalFilename(),file.getBytes()));
+        return new ResponseEntity(new EmptyJSON("ok"),  HttpStatus.OK);
+    }
 }

@@ -1,8 +1,8 @@
 
 import React, { useState } from "react";
-export default function UploadFile(props){
+export default function ChangeFile(props){
+    const[id,setId] = useState(props.fileId);
     const [selectedFile, setSelectedFile] = useState(null);
-    //const [fileId,setFileId] = useState(props.fileId);
 
     const onFileChangeHandler = (e) => {
         setSelectedFile(e.target.files[0]);
@@ -11,29 +11,37 @@ export default function UploadFile(props){
     const onClickHandler = (e) => {
         const formData = new FormData();
         formData.append('file', selectedFile);
-        //console.log(selectedFile);
-        fetch('recipe/uploadFile',{
-            method: 'post',
+        fetch('recipe/updateFile/'+id,{
+            method: 'put',
             body: formData
         }).then(res => res.json()) .then(data =>{
-            console.log(data.id)
-            if(data.id)props.setFileId(data.id);
+            //console.log(data)
+            
+            //if(data.id)props.setFileId(data.id);
             
         });
+        props.onImageChanged(id);
+        setSelectedFile(null);
+        console.log("file updated");
+        
+        
         
     }
 
     return(
         <div className="container">
+            
             <div className="row">
+                
                 <div className="col-md-6">
                     <div className="form-group files color">
-                            <label>Upload Your File </label>
+                            <label>Zmień zdjęcie </label>
                             <input type="file" className="form-control" name="file" onChange={onFileChangeHandler}/>
                     </div>
                     <button onClick={onClickHandler}>Prześlij</button>
                 </div>
             </div>
+            
         </div>
     )
 }

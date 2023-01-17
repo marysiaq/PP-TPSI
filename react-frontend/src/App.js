@@ -7,7 +7,7 @@ import UploadFile from './components/UploadFile';
 
 function App() {
   return (
-       <UploadFile></UploadFile>
+       <AddRecipe></AddRecipe>
   );
 }
 

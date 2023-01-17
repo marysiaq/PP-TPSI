@@ -4,14 +4,18 @@ import Categories from "./Categories";
 import AddIngredient from "./AddIngredient";
 import ShowIngredients from "./ShowIngredients";
 import DifficultyLevels from "./DifficultyLevels";
+import UploadFile from "./UploadFile";
+import ChangeFile from "./ChangeFile";
+import ShowImage from "./ShowImage";
 export default class AddRecipe extends React.Component{
     constructor(){
         super();
         this.state={
-            categories_id:[1,3],
-            ingredients:[],
             showIngredientForm:false,
             buttonDisabled:false,
+
+            categories_id:[1,3],
+            ingredients:[],
             ingredients_details:[],
             difficulty_id:2,
             recipe_name:"abcd",
@@ -19,6 +23,7 @@ export default class AddRecipe extends React.Component{
             prep_time:0,
             for_Vegans:false,
             portions:1,
+            image_id:6,
 
             categories_error:"",
             name_error:"",
@@ -27,7 +32,9 @@ export default class AddRecipe extends React.Component{
             portions_error:"",
             difficulty_error:"",
             ingredients_error:"",
-            error_message:""
+            error_message:"",
+
+
             
          }
          this.handleSubmit = this.handleSubmit.bind(this);
@@ -39,6 +46,9 @@ export default class AddRecipe extends React.Component{
          this.handleIngredientDelete = this.handleIngredientDelete.bind(this);
          this.onIngredientUpdate = this.onIngredientUpdate.bind(this);
          this.handleOnChangeDifficulty = this.handleOnChangeDifficulty.bind(this);
+         this.setFileId=this.setFileId.bind(this);
+         this.onImageChanged=this.onImageChanged.bind(this);
+
     }
     componentDidMount(){
         this.updateIngredients();
@@ -59,7 +69,12 @@ export default class AddRecipe extends React.Component{
             preparationTime:parseInt(this.state.prep_time),
             ingredients:[],
             categories:[],
-            difficulty:{id:this.state.difficulty_id, level:""}
+            difficulty:{id:this.state.difficulty_id, level:""},
+            photo:{
+                id:this.state.image_id,
+                photoName:"s",
+                photoContent:[]
+            }
         }
         this.state.ingredients.forEach(el=> {
             recipe.ingredients.push({
@@ -182,6 +197,15 @@ export default class AddRecipe extends React.Component{
         console.log(event.target.value)
         this.setState({difficulty_id:parseInt(event.target.value)});
     }
+    async setFileId(id)
+    {
+      
+        this.setState({image_id:id});
+    }
+
+    onImageChanged(id){
+        this.setState({image_id:id});
+    }
 
 
     render() {
@@ -208,6 +232,21 @@ export default class AddRecipe extends React.Component{
                     }
                     <br/>
                     <span > {this.state.ingredients_error}</span>
+                </div>
+
+                <div>
+                <label>
+                    <h3>Zdjęcie:</h3>
+                        {this.state.image_id===0&&
+                            <UploadFile setFileId={this.setFileId}></UploadFile>}
+                        {this.state.image_id!==0&&
+                        <>
+                            <ShowImage imageId={this.state.image_id} ></ShowImage>
+                            <ChangeFile fileId={this.state.image_id} onImageChanged={this.onImageChanged}></ChangeFile>
+                            </>
+                        }
+                    
+                </label>
                 </div>
             <form onSubmit={this.handleSubmit} >
                 
@@ -248,12 +287,6 @@ export default class AddRecipe extends React.Component{
                 <label>
                     <h3>Odpowiedni dla vegan: <input type="checkbox"  value={this.state.for_Vegans} onChange={(e) => this.setState({for_Vegans: e.target.value})}/></h3>   
                 </label> 
-                <div>
-                <label>
-                    <h3>Zdjęcie:<input value={this.state.file} onChange={(e) => this.setState({file: e.target.value})} type="file" accept="image/png, image/jpeg"/></h3>
-                </label>
-                </div>
-
                 
 
                 <input type="submit"/>
