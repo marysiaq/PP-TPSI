@@ -52,8 +52,10 @@ public class RecipeController {
         recipeService.createRecipe(recipe);
 
         return new ResponseEntity(new EmptyJSON("ok"),  HttpStatus.OK);
-
-
+    }
+    @GetMapping("/get/{id}")
+    public Recipe getRecipeById(@PathVariable long id){
+        return recipeService.getRecipeById(id);
     }
     @GetMapping("/categories")
     public List<Category> getCategories() {
@@ -77,9 +79,17 @@ public class RecipeController {
     public  ImageFile getImage(@PathVariable long id){
         return imageFileService.getImageById(id);
     }
-    @PutMapping(value="/updateFile/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE )
-    public  ResponseEntity updateImage(@PathVariable long id,@RequestParam MultipartFile file) throws IOException {
-        imageFileService.updateImage(new ImageFile(id,file.getOriginalFilename(),file.getBytes()));
+
+    //@PutMapping(value="/updateFile/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE )
+    //public  ResponseEntity updateImage(@PathVariable long id,@RequestParam MultipartFile file) throws IOException {
+       // imageFileService.updateImage(new ImageFile(id,file.getOriginalFilename(),file.getBytes()));
+       // return new ResponseEntity(new EmptyJSON("ok"),  HttpStatus.OK);
+   // }
+
+    @DeleteMapping(value="/deleteFile/{id}")
+    public  ResponseEntity deleteImage(@PathVariable long id) {
+
+        imageFileService.deleteImageById(id);
         return new ResponseEntity(new EmptyJSON("ok"),  HttpStatus.OK);
     }
 }

@@ -26,4 +26,9 @@ public class ImageFileServiceImplementation  implements ImageFileService {
     public void updateImage(ImageFile img) {
         imageFileRepository.save(img);
     }
+
+    @Override
+    public void deleteImageById(Long id) {
+        imageFileRepository.deleteById(id);
+    }
 }

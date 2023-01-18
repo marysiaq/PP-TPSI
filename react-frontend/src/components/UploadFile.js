@@ -28,7 +28,7 @@ export default function UploadFile(props){
             <div className="row">
                 <div className="col-md-6">
                     <div className="form-group files color">
-                            <label>Upload Your File </label>
+                            <label>Prześlij zdjęcie </label>
                             <input type="file" className="form-control" name="file" onChange={onFileChangeHandler}/>
                     </div>
                     <button onClick={onClickHandler}>Prześlij</button>

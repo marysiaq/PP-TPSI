@@ -45,6 +45,7 @@ public class Recipe {
     private boolean forVegans;
     @Min(1)@Max(8)
     private int portions;
+
     //@NotNull
     //private User author;
     @JoinColumn(name="fdate_Added")

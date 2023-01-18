@@ -19,16 +19,11 @@ import java.util.Set;
 
 @Getter@Setter@NoArgsConstructor@AllArgsConstructor
 public class RecipeDTO {
-    //private Long id;
+    private Long id;
     private String name;
-    private String preparation;
-    private List<Long> ingredients_ids;
     private int preparationTime;//minutes
-    private Integer difficulty_id;
-    private Set<Integer> categories_ids;
     private boolean forVegans;
     private int portions;
-    private MultipartFile photoContent;
     //@NotNull
     //private User author_id;
 }

@@ -14,4 +14,9 @@ public class RecipeServiceImplementation implements RecipeService {
     public void createRecipe(Recipe recipe) {
         recipeReposiory.save(recipe);
     }
+
+    @Override
+    public Recipe getRecipeById(Long id) {
+        return recipeReposiory.findById(id).orElseThrow();
+    }
 }

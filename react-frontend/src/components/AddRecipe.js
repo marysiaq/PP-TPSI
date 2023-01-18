@@ -21,9 +21,9 @@ export default class AddRecipe extends React.Component{
             recipe_name:"abcd",
             preparation:"wesadf adf a adfs ads as ads as d asd adsf ds sdfsdfadsfd asd fasdf sdf adsf sad asdf a fsd fs asd as d as sd ads a fds sa dsaf a",
             prep_time:0,
-            for_Vegans:false,
+            for_Vegans:true,
             portions:1,
-            image_id:6,
+            image_id:0,
 
             categories_error:"",
             name_error:"",
@@ -32,6 +32,7 @@ export default class AddRecipe extends React.Component{
             portions_error:"",
             difficulty_error:"",
             ingredients_error:"",
+            image_error:"",
             error_message:"",
 
 
@@ -47,7 +48,7 @@ export default class AddRecipe extends React.Component{
          this.onIngredientUpdate = this.onIngredientUpdate.bind(this);
          this.handleOnChangeDifficulty = this.handleOnChangeDifficulty.bind(this);
          this.setFileId=this.setFileId.bind(this);
-         this.onImageChanged=this.onImageChanged.bind(this);
+         this.handleForVegansChange=this.handleForVegansChange.bind(this);
 
     }
     componentDidMount(){
@@ -57,12 +58,10 @@ export default class AddRecipe extends React.Component{
     handleSubmit(event) {
         event.preventDefault();
         const current = new Date();
-        //const date = `${current.getFullYear()}-${current.getMonth()+1}-${current.getDate()}`;
-        //alert(date);
         let recipe={
             id:0,
             dateAdded:current,
-            for_Vegans:this.state.for_Vegans,
+            forVegans:this.state.for_Vegans,
             name:this.state.recipe_name,
             portions:parseInt(this.state.portions),
             preparation:this.state.preparation,
@@ -124,6 +123,9 @@ export default class AddRecipe extends React.Component{
                         }
                         if(fieldError.field === 'portions'){
                             this.setState({portions_error:fieldError.message})
+                        }
+                        if(fieldError.field ==='photo'){
+                            this.setState({image_error:fieldError.message})
                         }
                     
                     });
@@ -193,20 +195,18 @@ export default class AddRecipe extends React.Component{
        
         
     }
+    handleForVegansChange(event){
+        console.log(event.target.checked);
+        this.setState({for_Vegans:event.target.checked});
+    }
     handleOnChangeDifficulty(event){
         console.log(event.target.value)
         this.setState({difficulty_id:parseInt(event.target.value)});
     }
     async setFileId(id)
     {
-      
         this.setState({image_id:id});
     }
-
-    onImageChanged(id){
-        this.setState({image_id:id});
-    }
-
 
     render() {
     
@@ -240,11 +240,9 @@ export default class AddRecipe extends React.Component{
                         {this.state.image_id===0&&
                             <UploadFile setFileId={this.setFileId}></UploadFile>}
                         {this.state.image_id!==0&&
-                        <>
-                            <ShowImage imageId={this.state.image_id} ></ShowImage>
-                            <ChangeFile fileId={this.state.image_id} onImageChanged={this.onImageChanged}></ChangeFile>
-                            </>
+                            <ShowImage imageId={this.state.image_id} setFileId={this.setFileId} ></ShowImage>
                         }
+                        <span > {this.state.categories_error} </span>
                     
                 </label>
                 </div>
@@ -285,7 +283,7 @@ export default class AddRecipe extends React.Component{
                     <span > {this.state.portions_error} </span>
                 </label>
                 <label>
-                    <h3>Odpowiedni dla vegan: <input type="checkbox"  value={this.state.for_Vegans} onChange={(e) => this.setState({for_Vegans: e.target.value})}/></h3>   
+                    <h3>Odpowiedni dla vegan: <input type="checkbox"  checked={this.state.for_Vegans} onChange={this.handleForVegansChange}/></h3>   
                 </label> 
                 
 
