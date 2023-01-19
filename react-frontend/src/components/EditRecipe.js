@@ -5,19 +5,22 @@ import AddIngredient from "./AddIngredient";
 import ShowIngredients from "./ShowIngredients";
 import DifficultyLevels from "./DifficultyLevels";
 import UploadFile from "./UploadFile";
-import ChangeFile from "./ChangeFile";
 import ShowImage from "./ShowImage";
 import  {Navigate}  from "react-router-dom";
+import withRouter from './withRouter';
 
-export default class AddRecipe extends React.Component{
+ class EditRecipe extends React.Component{
     
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         this.state={
             showIngredientForm:false,
             buttonDisabled:false,
-            navigateToList:false,
+            navigateToDetails:false,
+            error404:false,
+            error500:false,
 
+            id:this.props.params.id,
             categories_id:[],
             ingredients:[],
             ingredients_details:[],
@@ -28,6 +31,7 @@ export default class AddRecipe extends React.Component{
             for_Vegans:false,
             portions:0,
             image_id:0,
+            dateAdded:"",
 
             categories_error:"",
             name_error:"",
@@ -55,7 +59,25 @@ export default class AddRecipe extends React.Component{
          this.handleForVegansChange=this.handleForVegansChange.bind(this);
 
     }
-    componentDidMount(){
+    async componentDidMount(){
+
+        const response = await fetch('/recipe/get/'+this.state.id,{method:"GET"});
+        if ( response.ok ) {
+            const body = await response.json();
+            let categories = [];
+            body.categories.forEach((cat)=>{categories.push(cat.id)})
+
+            let ingr = [];
+            body.ingredients.forEach((ing)=>{ingr.push(ing.id)})
+            let image = 0;
+           if(body.photo) image = body.photo.id;
+            this.setState({dateAdded:body.dateAdded,categories_id:categories,ingredients:ingr,difficulty_id:body.difficulty.id,recipe_name:body.name,preparation:body.preparation,prep_time:body.preparationTime,for_Vegans:body.forVegans,portions:body.portions,image_id:image});
+            
+            console.log(body);
+        }
+        if ( response.status===404 ) {
+            this.setState({error404:true});
+        }
         this.updateIngredients();
     }
 
@@ -63,8 +85,8 @@ export default class AddRecipe extends React.Component{
         event.preventDefault();
         const current = new Date();
         let recipe={
-            id:0,
-            dateAdded:current,
+            id:this.state.id,
+            dateAdded:this.state.dateAdded,
             forVegans:this.state.for_Vegans,
             name:this.state.recipe_name,
             portions:parseInt(this.state.portions),
@@ -73,25 +95,15 @@ export default class AddRecipe extends React.Component{
             ingredients:[],
             categories:[],
             difficulty:{id:this.state.difficulty_id, level:""},
-
             photo:{
                 id:this.state.image_id,
                 photoName:"s",
                 photoContent:[]
             }
-            
         }
         if(this.state.image_id===0)recipe.photo=null;
-        this.state.ingredients.forEach(el=> {
-            recipe.ingredients.push({
-                id:el,
-                name:"s",
-                amount:0,
-                unit:{
-                    id: 0,
-                    name: "s"
-                }
-            });
+        this.state.ingredients_details.forEach(el=> {
+            recipe.ingredients.push(el);
         });
 
         this.state.categories_id.forEach(el=> {
@@ -103,7 +115,7 @@ export default class AddRecipe extends React.Component{
             );
         });
         console.log(recipe);
-        const response = await fetch('/recipe/create',{method:"POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(recipe)});
+        const response = await fetch('/recipe/update',{method:"PUT",headers:{"Content-Type":"application/json"}, body:JSON.stringify(recipe)});
             if(response.status===406){
                 const body = await response.json();
                 if(body.fieldErrors){
@@ -136,50 +148,11 @@ export default class AddRecipe extends React.Component{
                     });
             }}
             if ( response.ok ) {
-                const body = await response.json();
-                this.setState({navigateToList: true});
-                console.log(body);
+                //const body = await response.json();
+                this.setState({navigateToDetails: true});
+                //console.log(body);
             }
-        /*fetch('/recipe/create',{method:"POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(recipe)})
-            .then((response) =>
-                response.json()
-            )
-            .then((data) => {
-                if(data.fieldErrors){
-                    data.fieldErrors.forEach(fieldError => {
-                        if(fieldError.field === 'name'){
-                            this.setState({name_error:fieldError.message})
-                     }
-                        if(fieldError.field === 'preparation'){
-                        this.setState({preparation_error:fieldError.message})
-                        }
-                        if(fieldError.field === 'preparationTime'){
-                            this.setState({prep_time_error:fieldError.message})
-                        }
-                        if(fieldError.field === 'categories'){
-                            this.setState({categories_error:fieldError.message})
-                        }
-                        if(fieldError.field === 'ingredients'){
-                            this.setState({ingredients_error:fieldError.message})
-                        }
-                        if(fieldError.field === 'difficulty'){
-                            this.setState({difficulty_error:fieldError.message})
-                        }
-                        if(fieldError.field === 'portions'){
-                            this.setState({portions_error:fieldError.message})
-                        }
-                        if(fieldError.field ==='photo'){
-                            this.setState({image_error:fieldError.message})
-                        }
-                    
-                    });
-                }
-                if(data.ok){
-                    this.setState({navigateToList: true});
-                }
-                
-           })
-            .catch((err) => alert(err));*/
+     
 
     }
     handleOnChangeCategories(e){
@@ -254,10 +227,13 @@ export default class AddRecipe extends React.Component{
     }
 
     render() {
+        console.log(this.state.ingredients_details)
     
         return (
             <div>
-                {this.state.navigateToList&&<Navigate to="/recipelist"/>}
+                {this.state.navigateToDetails&&<Navigate to={`/recipelist/details/${this.state.id}`}/>}
+                {this.state.error404&&<Navigate to={`/error404`}/>}
+                <h1>Edytuj przepis</h1>
                 <div >
                     <h3>Składniki:</h3>
                         <ShowIngredients ingredients={this.state.ingredients_details} 
@@ -333,7 +309,7 @@ export default class AddRecipe extends React.Component{
                 </label> 
                 
 
-                <input type="submit" value="Dodaj"/>
+                <input type="submit" value="Zapisz"/>
                 <br/>
                 <span > {this.state.error_message} </span>
             </form>
@@ -343,3 +319,5 @@ export default class AddRecipe extends React.Component{
             
     }
 }
+
+export default withRouter(EditRecipe);

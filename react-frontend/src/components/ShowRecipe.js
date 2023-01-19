@@ -1,10 +1,15 @@
 import React, { useState,useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 export default function ShowRecipe(props){
-    const [id,setId] = useState(props.recipeId);
+    const {id} = useParams();
+    const navigate = useNavigate();
     const[recipe,setRecipe] = useState(null);
+    const [likes,setLikes] = useState(0);
+    const [liked,setLiked] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
+            console.log(id);
 
             const response = await fetch('/recipe/get/'+id,{method:"GET"});
             if ( response.ok ) {
@@ -12,13 +17,46 @@ export default function ShowRecipe(props){
                 setRecipe(body);
                 console.log(body);
             }
+            if ( response.status===404 ) {
+                navigate("/error404");
+            }
+
 
         }
         fetchData();
     },[]);
+    //const onClickHandler = (e) =>
+    const handleDelete =async (e)=>{
+        if(!window.confirm("Czy napewno chcesz usunąć ten przepis?"))return;
+        const response = await fetch('/recipe/delete/'+id,{method:"DELETE"});
+            if ( response.ok ) {
+                navigate("/recipelist");
+            }
+            if ( response.status===500 ) {
+                navigate("/error500");
+            }
+            if ( response.status===404 ) {
+                navigate("/error404");
+            }
+
+    }
+
+    const handleLike = async (e)=>{
+        const response = await fetch('/recipe/like/'+id,{method:"POST"});
+            
+            if ( response.status===500 ) {
+                navigate("/error500");
+            }
+            if ( response.status===404 ) {
+                navigate("/error404");
+            }
+
+        setLiked(true);
+
+    }
 
     return(
-        <div>
+        <div>  
            {recipe!==null&&
             <div>
                 <h2>{recipe.name}</h2>
@@ -53,10 +91,13 @@ export default function ShowRecipe(props){
                 
                 
                 <p><b>Data dodania:</b> {recipe.dateAdded}</p>
+                <div>
+                    {liked?<p>Polubiono przepis!</p>:<button onClick={handleLike}>Polub przepis</button>}
+                </div>
+                <Link to={`/recipelist/edit/${recipe.id}`}>Edytuj</Link>
+                <button onClick={handleDelete}>Usuń</button>
             </div>
            } 
-
-           
         </div>
     );
 }

@@ -12,7 +12,7 @@ export default function UploadFile(props){
         const formData = new FormData();
         formData.append('file', selectedFile);
         //console.log(selectedFile);
-        fetch('recipe/uploadFile',{
+        fetch('/recipe/uploadFile',{
             method: 'post',
             body: formData
         }).then(res => res.json()) .then(data =>{

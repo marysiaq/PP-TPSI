@@ -26,4 +26,10 @@ public class RecipeDTO {
     private int portions;
     //@NotNull
     //private User author_id;
+    private  String difficultyLevel;
+
+    public void setLevel(Difficulty dl) {
+        this.difficultyLevel = dl.getLevel();
+    }
+
 }

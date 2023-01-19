@@ -1,4 +1,4 @@
-package com.example.spring.controllers;
+package com.example.spring.RESTcontrollers;
 
 import DTO.EmptyJSON;
 import DTO.IdClass;

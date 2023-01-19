@@ -1,14 +1,12 @@
-package com.example.spring.controllers;
+package com.example.spring.RESTcontrollers;
 
 import DTO.*;
+import com.example.spring.exceptions.RecipeNotFoundException;
 import com.example.spring.models.Category;
 import com.example.spring.models.Difficulty;
 import com.example.spring.models.ImageFile;
 import com.example.spring.models.Recipe;
-import com.example.spring.services.CategoryService;
-import com.example.spring.services.DifficultyService;
-import com.example.spring.services.ImageFileService;
-import com.example.spring.services.RecipeService;
+import com.example.spring.services.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +28,8 @@ public class RecipeController {
     private CategoryService categoryService;
     @Autowired
     private DifficultyService difficultyService;
+    @Autowired
+    private LikeService likeService;
     @Autowired
     private RecipeService recipeService;
 
@@ -53,9 +53,36 @@ public class RecipeController {
 
         return new ResponseEntity(new EmptyJSON("ok"),  HttpStatus.OK);
     }
+    @PutMapping("/update")
+    public  ResponseEntity updateRecipe(@Valid @RequestBody Recipe recipe, BindingResult result) throws RecipeNotFoundException {
+        if(result.hasErrors()){
+            var List = result.getFieldErrors().stream().
+                    map(f->new CustomFieldError(f.getField(), f.getDefaultMessage())).
+                    collect(Collectors.toList());
+            FieldErrorResponse fieldErrorResponse = new FieldErrorResponse();
+            fieldErrorResponse.setFieldErrors(List);
+
+            return new ResponseEntity(fieldErrorResponse, HttpStatus.NOT_ACCEPTABLE);
+        }
+        recipeService.updateRecipe(recipe);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+    @DeleteMapping(value = "/delete/{id}")
+    public  ResponseEntity deleteRecipe(@PathVariable long id) throws RecipeNotFoundException {
+        recipeService.deleteRecipeById(id);
+        return new ResponseEntity(HttpStatus.OK);
+    }
     @GetMapping("/get/{id}")
-    public Recipe getRecipeById(@PathVariable long id){
+    public Recipe getRecipeById(@PathVariable long id) throws RecipeNotFoundException {
         return recipeService.getRecipeById(id);
+    }
+    @GetMapping("/list")
+    public ResponseEntity<Object> getList(){
+        var recipes = recipeService.getRecipes();
+        var dtoList =recipes.stream().map(e -> {
+            return modelMapper.map(e,RecipeDTO.class);
+        }).collect(Collectors.toList());
+        return new ResponseEntity(dtoList, HttpStatus.OK);
     }
     @GetMapping("/categories")
     public List<Category> getCategories() {
@@ -80,16 +107,17 @@ public class RecipeController {
         return imageFileService.getImageById(id);
     }
 
-    //@PutMapping(value="/updateFile/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE )
-    //public  ResponseEntity updateImage(@PathVariable long id,@RequestParam MultipartFile file) throws IOException {
-       // imageFileService.updateImage(new ImageFile(id,file.getOriginalFilename(),file.getBytes()));
-       // return new ResponseEntity(new EmptyJSON("ok"),  HttpStatus.OK);
-   // }
-
     @DeleteMapping(value="/deleteFile/{id}")
     public  ResponseEntity deleteImage(@PathVariable long id) {
 
         imageFileService.deleteImageById(id);
         return new ResponseEntity(new EmptyJSON("ok"),  HttpStatus.OK);
     }
+    @PostMapping("/like/{id}")
+    public ResponseEntity likeRecipe(@PathVariable Long id){
+        likeService.addLike(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
+
 }

@@ -67,6 +67,9 @@ public class Recipe {
         this.portions = portions;
         this.dateAdded = dateAdded;
     }
+    public void setDifficultyLevel(String level){
+        difficulty = new Difficulty(level);
+    }
 
 
 
