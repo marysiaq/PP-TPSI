@@ -28,6 +28,10 @@ export default function Ranking(props){
             <div>
                 <h1>Ranking przepisów</h1>
                 <table>
+                <thead>
+                    <tr><th> </th><th> </th><th>Polubienia:</th></tr>
+                </thead>
+                
                     <tbody>
                         {
                             recipes.ranking.map((recipe,index)=>(<tr key={index}><td><b>{index + 1}.</b></td><td>{recipe.recipeName}</td><td>{recipe.amount}</td><td><Link to={`/recipelist/details/${recipe.recipeId}`}> Szczegóły</Link></td></tr>))

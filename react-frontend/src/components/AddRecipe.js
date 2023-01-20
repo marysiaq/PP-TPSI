@@ -53,6 +53,7 @@ export default class AddRecipe extends React.Component{
          this.handleOnChangeDifficulty = this.handleOnChangeDifficulty.bind(this);
          this.setFileId=this.setFileId.bind(this);
          this.handleForVegansChange=this.handleForVegansChange.bind(this);
+         this.handleCancelAddRecipe = this.handleCancelAddRecipe.bind(this);
 
     }
     componentDidMount(){
@@ -253,6 +254,10 @@ export default class AddRecipe extends React.Component{
         this.setState({image_id:id});
     }
 
+    handleCancelAddRecipe(e){
+        this.setState({navigateToList:true});
+    }
+
     render() {
     
         return (
@@ -337,6 +342,7 @@ export default class AddRecipe extends React.Component{
                 <br/>
                 <span > {this.state.error_message} </span>
             </form>
+            <button onClick={this.handleCancelAddRecipe}>Anuluj</button>
             
             </div>
             );

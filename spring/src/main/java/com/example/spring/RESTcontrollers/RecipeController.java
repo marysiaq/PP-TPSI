@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -72,6 +73,10 @@ public class RecipeController {
         List<RecipeLikes> ranking = likeService.getRanking();
         return new ResponseEntity<>(new Ranking(ranking),HttpStatus.OK);
     }
+    @GetMapping(value = "/getrecipelikes/{id}")
+    public  ResponseEntity getReceipeLikes(@PathVariable long id){
+        return  new ResponseEntity<>(likeService.getRecipeLikes(id), HttpStatus.OK);
+    }
 
     @DeleteMapping(value = "/delete/{id}")
     public  ResponseEntity deleteRecipe(@PathVariable long id) throws RecipeNotFoundException {
@@ -83,13 +88,44 @@ public class RecipeController {
         return recipeService.getRecipeById(id);
     }
     @GetMapping("/list")
-    public ResponseEntity<Object> getList(){
+    public ResponseEntity<Object> getList(@RequestParam(required = false) Optional<String> phrase, @RequestParam(required = false) Optional<Integer> min, @RequestParam(required = false) Optional<Integer> max, @RequestParam(required = false) Optional<List<Integer>> categoriesIds,@RequestParam(required = false) Optional<Integer> difficultyId){
+        if(phrase.isPresent()&&phrase.get()!=""){
+            var recipes = recipeService.getRecipesPhraseFilter(phrase.get());
+            var dtoList =recipes.stream().map(e -> {
+                return modelMapper.map(e,RecipeDTO.class);
+            }).collect(Collectors.toList());
+            return new ResponseEntity(dtoList, HttpStatus.OK);
+        }
+        if(categoriesIds.isPresent()&&categoriesIds.get().size()!=0){
+            var recipes = recipeService.getRecipesCategoriesFilter(categoriesIds.get());
+            var dtoList =recipes.stream().map(e -> {
+                return modelMapper.map(e,RecipeDTO.class);
+            }).collect(Collectors.toList());
+            return new ResponseEntity(dtoList, HttpStatus.OK);
+        }
+
+        if(min.isPresent()&&max.isPresent()&&!min.isEmpty()&&!max.isEmpty()){
+            var recipes = recipeService.getRecipesPreparationTimeFilter(min.get(),max.get());
+            var dtoList =recipes.stream().map(e -> {
+                return modelMapper.map(e,RecipeDTO.class);
+            }).collect(Collectors.toList());
+            return new ResponseEntity(dtoList, HttpStatus.OK);
+        }
+        if(difficultyId.isPresent()&&!difficultyId.isEmpty()){
+            var recipes = recipeService.getRecipesDifficultyFilter(difficultyId.get());
+            var dtoList =recipes.stream().map(e -> {
+                return modelMapper.map(e,RecipeDTO.class);
+            }).collect(Collectors.toList());
+            return new ResponseEntity(dtoList, HttpStatus.OK);
+        }
+
         var recipes = recipeService.getRecipes();
         var dtoList =recipes.stream().map(e -> {
             return modelMapper.map(e,RecipeDTO.class);
         }).collect(Collectors.toList());
         return new ResponseEntity(dtoList, HttpStatus.OK);
     }
+
     @GetMapping("/categories")
     public List<Category> getCategories() {
         return categoryService.getCategories();

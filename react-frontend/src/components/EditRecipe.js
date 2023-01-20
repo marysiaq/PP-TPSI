@@ -57,6 +57,7 @@ import withRouter from './withRouter';
          this.handleOnChangeDifficulty = this.handleOnChangeDifficulty.bind(this);
          this.setFileId=this.setFileId.bind(this);
          this.handleForVegansChange=this.handleForVegansChange.bind(this);
+         this.handleCancelEditRecipe=this.handleCancelEditRecipe.bind(this);
 
     }
     async componentDidMount(){
@@ -225,6 +226,9 @@ import withRouter from './withRouter';
     {
         this.setState({image_id:id});
     }
+    handleCancelEditRecipe(e){
+        this.setState({navigateToDetails:true});
+    }
 
     render() {
         console.log(this.state.ingredients_details)
@@ -313,6 +317,7 @@ import withRouter from './withRouter';
                 <br/>
                 <span > {this.state.error_message} </span>
             </form>
+            <button onClick={this.handleCancelEditRecipe}>Anuluj</button>
             
             </div>
             );

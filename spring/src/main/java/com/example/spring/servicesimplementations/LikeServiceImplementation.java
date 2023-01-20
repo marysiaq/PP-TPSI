@@ -40,4 +40,9 @@ public class LikeServiceImplementation implements LikeService {
         }).collect(Collectors.toList());
         return list;
     }
+
+    @Override
+    public Long getRecipeLikes(Long id) {
+        return likeRepository.countByRecipeId(id);
+    }
 }

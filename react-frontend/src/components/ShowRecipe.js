@@ -20,7 +20,22 @@ export default function ShowRecipe(props){
             if ( response.status===404 ) {
                 navigate("/error404");
             }
+            if ( response.status===500 ) {
+                navigate("/error500");
+            }
 
+            const response2 = await fetch('/recipe/getrecipelikes/'+id,{method:"GET"});
+            if ( response2.ok ) {
+                const body = await response2.json();
+                setLikes(body);
+                console.log(body);
+            }
+            if ( response2.status===404 ) {
+                navigate("/error404");
+            }
+            if ( response2.status===500 ) {
+                navigate("/error500");
+            }
 
         }
         fetchData();
@@ -52,6 +67,7 @@ export default function ShowRecipe(props){
             }
 
         setLiked(true);
+        setLikes(likes+1);
 
     }
 
@@ -91,6 +107,7 @@ export default function ShowRecipe(props){
                 
                 
                 <p><b>Data dodania:</b> {recipe.dateAdded}</p>
+                <p><b>Polubienia:</b> {likes}</p>
                 <div>
                     {liked?<p>Polubiono przepis!</p>:<button onClick={handleLike}>Polub przepis</button>}
                 </div>

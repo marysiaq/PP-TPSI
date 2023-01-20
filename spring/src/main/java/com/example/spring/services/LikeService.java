@@ -9,6 +9,9 @@ import java.util.List;
 public interface LikeService {
     public abstract void  addLike(Long recipeId);
     public abstract List<RecipeLikes> getRanking();
+    public abstract Long getRecipeLikes(Long id);
+
+
 
 
 }
