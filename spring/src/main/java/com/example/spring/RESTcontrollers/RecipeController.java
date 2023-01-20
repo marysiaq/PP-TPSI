@@ -67,6 +67,12 @@ public class RecipeController {
         recipeService.updateRecipe(recipe);
         return new ResponseEntity(HttpStatus.OK);
     }
+    @RequestMapping(method = RequestMethod.GET, value = "/getranking")
+    public ResponseEntity  getRanking() {
+        List<RecipeLikes> ranking = likeService.getRanking();
+        return new ResponseEntity<>(new Ranking(ranking),HttpStatus.OK);
+    }
+
     @DeleteMapping(value = "/delete/{id}")
     public  ResponseEntity deleteRecipe(@PathVariable long id) throws RecipeNotFoundException {
         recipeService.deleteRecipeById(id);

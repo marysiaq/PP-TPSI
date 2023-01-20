@@ -10,6 +10,7 @@ import Layout from './components/Layout';
 import Error404 from './components/Error404';
 import EditRecipe from './components/EditRecipe';
 import Error500 from './components/Error500';
+import Ranking from './components/Ranking';
 
 
 
@@ -22,6 +23,7 @@ function App() {
         <Route path="recipelist/details/:id" element={<ShowRecipe/>}/>
         <Route path="recipelist/edit/:id"  element={<EditRecipe/>}/>
         <Route path="recipelist/add" element={<AddRecipe/>}/>
+        <Route path="/ranking" element={<Ranking/>}/>
         <Route path="/error404" element={<Error404/>}/>
         <Route path="/error500" element={<Error500/>}/>
         </Route>
