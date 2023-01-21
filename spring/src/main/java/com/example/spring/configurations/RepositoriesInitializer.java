@@ -6,6 +6,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,10 +26,33 @@ public class RepositoriesInitializer {
     private RecipeReposiory recipeReposiory;
     @Autowired
     private UnitRepository unitRepository;
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    PasswordEncoder encoder;
 
     @Bean
     InitializingBean init (){
         return () -> {
+            if(roleRepository.findAll().isEmpty()){
+                Role r1 = new Role(ERole.ROLE_ADMIN);
+                Role r2 = new Role(ERole.ROLE_USER);
+
+                roleRepository.save(r1);
+                roleRepository.save(r2);
+            }
+            if(userRepository.findAll().isEmpty()){
+                User admin = new User("Admin","admin@gmail.com",encoder.encode("Admin@123"));
+                Set<Role> rolesadmin = new HashSet<>();
+                rolesadmin.add(roleRepository.findByName(ERole.ROLE_ADMIN).get());
+                admin.setRoles(rolesadmin);
+                userRepository.save(admin);
+            }
+
             if(recipeReposiory.findAll().isEmpty()) {
                 Category c1 = new Category("Śniadanie");
                 Category c2 = new Category("Obiad");

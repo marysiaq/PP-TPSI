@@ -6,33 +6,44 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.annotation.security.DenyAll;
+import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.util.HashSet;
 import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "users")
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotEmpty
     @NotBlank
     @Size(min =2, max=40)
     private String username;
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,20}$")
+    @NotBlank
     private String password;
-    private String passwordConfirm;
+
     @Email
     private String email;
+
     private boolean enabled = false;
-    private Set<Role> roles;
 
-    public User(String username){
-        this(username, false);
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(	name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
+    
+    public User(String username, String email, String encode) {
+        //id = 0L;
+        this.username=username;
+        this.email=email;
+        this.password=encode;
+
     }
-
-    public User(String username, boolean enabled){
-        this.username = username;
-        this.enabled = enabled;
-    }
-
 }

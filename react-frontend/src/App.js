@@ -11,6 +11,7 @@ import Error404 from './components/Error404';
 import EditRecipe from './components/EditRecipe';
 import Error500 from './components/Error500';
 import Ranking from './components/Ranking';
+import "bootstrap/dist/css/bootstrap.min.css";
 
 
 

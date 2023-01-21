@@ -13,7 +13,7 @@ public class PasswordConfirmValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         var p = (User) target;
-        if(!p.getPassword().equals(p.getPasswordConfirm())){
+        if(!p.getPassword().equals(p.getPassword())){
             errors.rejectValue("passwordConfirm","Confirm.user.passwordConfirm");
 
         }

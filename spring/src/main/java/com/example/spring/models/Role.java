@@ -5,22 +5,27 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Set;
+import javax.persistence.*;
+
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "roles")
 public class Role {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Types type;
-    private Set<User> users;
-    public Role(Types type){
-        this.type = type;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private ERole name;
+
+    public Role(ERole name) {
+        this.name = name;
     }
-    public static enum Types{
-        ROLE_ADMIN,
-        ROLE_USER
-    }
+
+
 }
