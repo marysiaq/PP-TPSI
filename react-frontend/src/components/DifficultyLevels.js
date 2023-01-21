@@ -16,6 +16,7 @@ export default function DifficultyLevels(props){
         <>
         <h3>Poziom trudności: </h3>
         <select value={props.value} onChange={props.onChangeValue}>
+            <option disabled  value="0" > -- wybierz z listy -- </option>
             {
                 difficultyLevels.map((level) => (
                     <option key={level.id} value={level.id}> {level.level} </option>

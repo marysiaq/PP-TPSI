@@ -37,7 +37,9 @@ export default function RecipeList(props){
     }
 
     const handleOnChangeDifficulty = (e)=>{
+        console.log(parseInt(e.target.value));
         setDifficulty_id(parseInt(e.target.value))
+
     }
 
     const handleSearch = async () =>{

@@ -89,40 +89,40 @@ public class RecipeController {
     }
     @GetMapping("/list")
     public ResponseEntity<Object> getList(@RequestParam(required = false) Optional<String> phrase, @RequestParam(required = false) Optional<Integer> min, @RequestParam(required = false) Optional<Integer> max, @RequestParam(required = false) Optional<List<Integer>> categoriesIds,@RequestParam(required = false) Optional<Integer> difficultyId){
-        if(phrase.isPresent()&&phrase.get()!=""){
-            var recipes = recipeService.getRecipesPhraseFilter(phrase.get());
-            var dtoList =recipes.stream().map(e -> {
-                return modelMapper.map(e,RecipeDTO.class);
-            }).collect(Collectors.toList());
-            return new ResponseEntity(dtoList, HttpStatus.OK);
-        }
-        if(categoriesIds.isPresent()&&categoriesIds.get().size()!=0){
-            var recipes = recipeService.getRecipesCategoriesFilter(categoriesIds.get());
-            var dtoList =recipes.stream().map(e -> {
-                return modelMapper.map(e,RecipeDTO.class);
-            }).collect(Collectors.toList());
-            return new ResponseEntity(dtoList, HttpStatus.OK);
-        }
-
-        if(min.isPresent()&&max.isPresent()&&!min.isEmpty()&&!max.isEmpty()){
-            var recipes = recipeService.getRecipesPreparationTimeFilter(min.get(),max.get());
-            var dtoList =recipes.stream().map(e -> {
-                return modelMapper.map(e,RecipeDTO.class);
-            }).collect(Collectors.toList());
-            return new ResponseEntity(dtoList, HttpStatus.OK);
-        }
-        if(difficultyId.isPresent()&&!difficultyId.isEmpty()){
-            var recipes = recipeService.getRecipesDifficultyFilter(difficultyId.get());
-            var dtoList =recipes.stream().map(e -> {
-                return modelMapper.map(e,RecipeDTO.class);
-            }).collect(Collectors.toList());
-            return new ResponseEntity(dtoList, HttpStatus.OK);
-        }
-
         var recipes = recipeService.getRecipes();
         var dtoList =recipes.stream().map(e -> {
             return modelMapper.map(e,RecipeDTO.class);
         }).collect(Collectors.toList());
+
+        if(phrase.isPresent()&&phrase.get()!=""){
+            var recipes1 = recipeService.getRecipesPhraseFilter(phrase.get());
+            var dtoList1 =recipes1.stream().map(e -> {
+                return modelMapper.map(e,RecipeDTO.class);
+            }).collect(Collectors.toList());
+            dtoList.retainAll(dtoList1);
+        }
+        if(categoriesIds.isPresent()&&categoriesIds.get().size()!=0){
+            var recipes1 = recipeService.getRecipesCategoriesFilter(categoriesIds.get());
+            var dtoList1 =recipes1.stream().map(e -> {
+                return modelMapper.map(e,RecipeDTO.class);
+            }).collect(Collectors.toList());
+            dtoList.retainAll(dtoList1);
+        }
+
+        if(min.isPresent()&&max.isPresent()&&!min.isEmpty()&&!max.isEmpty()){
+            var recipes1 = recipeService.getRecipesPreparationTimeFilter(min.get(),max.get());
+            var dtoList1 =recipes1.stream().map(e -> {
+                return modelMapper.map(e,RecipeDTO.class);
+            }).collect(Collectors.toList());
+            dtoList.retainAll(dtoList1);
+        }
+        if(difficultyId.isPresent()&&!difficultyId.isEmpty()){
+            var recipes1 = recipeService.getRecipesDifficultyFilter(difficultyId.get());
+            var dtoList1 =recipes1.stream().map(e -> {
+                return modelMapper.map(e,RecipeDTO.class);
+            }).collect(Collectors.toList());
+            dtoList.retainAll(dtoList1);
+        }
         return new ResponseEntity(dtoList, HttpStatus.OK);
     }
 
