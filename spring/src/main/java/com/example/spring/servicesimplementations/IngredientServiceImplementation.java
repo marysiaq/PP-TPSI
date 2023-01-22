@@ -8,6 +8,7 @@ import com.example.spring.services.IngredientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -37,6 +38,7 @@ public class IngredientServiceImplementation implements IngredientService {
     }
 
     @Override
+    @Transactional
     public void deleteIngredientById(Long id) {
         List<Ingredient> list = new ArrayList<>();
         list.add(ingredientRepository.findById(id).orElseThrow());

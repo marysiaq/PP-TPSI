@@ -9,6 +9,7 @@ import ChangeFile from "./ChangeFile";
 import ShowImage from "./ShowImage";
 import  {Navigate}  from "react-router-dom";
 import RecipeService from "../services/recipe.service";
+import IngredientService from "../services/ingredient.service";
 
 export default class AddRecipe extends React.Component{
     
@@ -106,12 +107,12 @@ export default class AddRecipe extends React.Component{
                 }
             );
         });
-        console.log(recipe);
+        //console.log(recipe);
 
-        const response = RecipeService.createRecipe(recipe)//await fetch('/recipe/create',{method:"POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(recipe)});
-            console.log(response)
+        const response = await RecipeService.createRecipe(recipe)//await fetch('/recipe/create',{method:"POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(recipe)});
+           // console.log(response)
         if(response.status===406){
-                const body = await response.json();
+                const body = await response.data;
                 if(body.fieldErrors){
                     body.fieldErrors.forEach(fieldError => {
                         if(fieldError.field === 'name'){
@@ -144,8 +145,8 @@ export default class AddRecipe extends React.Component{
             if(response.status===401){
                 this.setState({error401:true});
             }
-            if ( response.ok ) {
-                const body = await response.json();
+            if ( response.status ===200 ) {
+                const body = await response.data;
                 this.setState({navigateToList: true});
                 console.log(body);
             }
@@ -170,8 +171,10 @@ export default class AddRecipe extends React.Component{
         let newIng = this.state.ingredients.slice();
         newIng.push(newid);
 
-        const response = await fetch('/ingredient/list',{method: "POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(newIng)});
-        const body =await  response.json();  
+
+
+        const response =await IngredientService.getIngredientList(newIng);//await fetch('/ingredient/list',{method: "POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(newIng)});
+        const body =await  response.data;  
         console.log(body);
 
 
@@ -180,23 +183,23 @@ export default class AddRecipe extends React.Component{
         
     }
     async updateIngredients(){
-        const response = await fetch('/ingredient/list',{method: "POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(this.state.ingredients)});
-        const body =await  response.json();  
+        const response = await IngredientService.getIngredientList(this.state.ingredients)//event.target.value //await fetch('/ingredient/list',{method: "POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(this.state.ingredients)});
+        const body =await  response.data;  
         console.log(body);
         this.setState({ingredients_details: body});
       }
    async handleIngredientDelete(event){
         if(!window.confirm("Czy napewno chcesz usunąć ten składnik?"))return;
-        const response = await fetch('/ingredient/'+event.target.value,{method: "DELETE"});
-        console.log(response)
+        const response =IngredientService.deleteIngredient(event.target.value); //await fetch('/ingredient/'+event.target.value,{method: "DELETE"});
+        //console.log(response)
 
         let newArray = this.state.ingredients.slice();
         newArray=newArray.filter((item) => item !== parseInt(event.target.value));
 
         
         
-        const response2 = await fetch('/ingredient/list',{method: "POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(this.state.ingredients)});
-        const body =await  response2.json();  
+        const response2 =await  IngredientService.getIngredientList(this.state.ingredients);//await fetch('/ingredient/list',{method: "POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(this.state.ingredients)});
+        const body =await  response2.data;  
         console.log(body);
         this.setState({ingredients:newArray, ingredients_details:body})
 

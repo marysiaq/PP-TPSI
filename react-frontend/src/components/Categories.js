@@ -1,4 +1,5 @@
 import React  from "react"; 
+import RecipeService from '../services/recipe.service'
 export default class Categories extends React.Component {
     constructor(props){
         super(props);
@@ -9,8 +10,10 @@ export default class Categories extends React.Component {
     
       }
       async componentDidMount() {
-        const response = await fetch('/recipe/categories');
-        const body = await response.json();
+        const response = await RecipeService.getCategories();//await fetch('/recipe/categories');
+        console.log(response);
+        const body = await response.data;
+        console.log(body)
         this.setState({categories: body});
       } 
       render() {  

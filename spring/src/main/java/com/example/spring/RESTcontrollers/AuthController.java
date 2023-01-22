@@ -124,8 +124,7 @@ public class AuthController {
 			});
 		}
 
-		user.setRoles(roles);
-		//user.setId(0L);
+		user.setRoles(roles);;
 		userRepository.save(user);
 
 		return ResponseEntity.ok(new MessageResponse("Rejestracja się powiodła!"));

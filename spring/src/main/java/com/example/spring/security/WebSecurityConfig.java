@@ -99,7 +99,7 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
         .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
         .authorizeRequests().antMatchers("/api/auth/**").permitAll()
-        .antMatchers("/api/test/**","/recipe/**","/ingredient/list","/ingredient/units").permitAll()
+        .antMatchers("/api/test/**").permitAll().antMatchers("/api/recipe/**").permitAll().mvcMatchers("/api/ingredient/**").permitAll()
             .antMatchers(WebSecurityConfig.AUTH_WHITELIST).anonymous()
         .anyRequest().authenticated();
     

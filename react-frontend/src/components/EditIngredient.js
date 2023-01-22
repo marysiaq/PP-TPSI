@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import IngredientService from '../services/ingredient.service'
 import Units from "./Units";
 export default function EditIngredient(props){
     const [name, setName] = useState(props.name);
@@ -11,7 +12,7 @@ export default function EditIngredient(props){
     const [unit_error,setUnit_error]= useState("");
    
 
-    const handleSubmit=(event)=> {
+    const handleSubmit=async (event)=> {
         event.preventDefault();
         const updatedIngredient={
             id:props.id,
@@ -23,7 +24,35 @@ export default function EditIngredient(props){
             amount:parseInt(amount)
         }
         console.log(updatedIngredient);
-       fetch('/ingredient/',{method:"PUT",headers:{"Content-Type":"application/json"}, body:JSON.stringify(updatedIngredient)}).then(response => response.json())
+        const response = await IngredientService.updateIngredient(updatedIngredient);
+        if(response.status ===200){
+            let body =   response.data;
+
+            setUnit_error("");
+            setAmount_error("");
+            setName_error("");
+
+            props.onUpdate(updatedIngredient);
+            props.onCancel();
+        }
+        if(response.status===406){
+            let data =  response.data;
+            if(data.fieldErrors){
+                data.fieldErrors.forEach(fieldError => {
+                    if(fieldError.field === 'name'){
+                        setName_error(fieldError.message)
+                 }
+                    if(fieldError.field === 'amount'){
+                        setAmount_error(fieldError.message)
+                    }
+                    if(fieldError.field === 'unit'){
+                        setUnit_error(fieldError.message)
+                    }
+                });
+            }
+
+        }
+      /* fetch('/ingredient/',{method:"PUT",headers:{"Content-Type":"application/json"}, body:JSON.stringify(updatedIngredient)}).then(response => response.json())
        .then(data =>{
         if(data.fieldErrors){
             data.fieldErrors.forEach(fieldError => {
@@ -48,7 +77,7 @@ export default function EditIngredient(props){
         }
         
 
-        } );
+        } );*/
        
        
        

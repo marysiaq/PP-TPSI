@@ -19,14 +19,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/ingredient")
-@SessionAttributes(value = {"units"})
+@RequestMapping("/api/ingredient")
 public class IngredientController {
     @Autowired
     private UnitService unitService;
     @Autowired
     private IngredientService ingredientService;
-
     @GetMapping("/units")
     public List<Unit> getUnits (){
         return unitService.getUnits();}
@@ -36,9 +34,9 @@ public class IngredientController {
     }
     @PostMapping("/list" )
     public List<Ingredient> getIngredients(@RequestBody List<Long> ids){
+        System.out.println("sdfffffffffffffffffffffffffffffffffffffffffffffffff"+ingredientService.getIngredients(ids));
         return ingredientService.getIngredients(ids);
     }
-
     @DeleteMapping("/{id}")
     public void deleteIngredient(@PathVariable long id) {
         ingredientService.deleteIngredientById(id);
@@ -73,8 +71,6 @@ public class IngredientController {
 
             return new ResponseEntity(fieldErrorResponse,HttpStatus.NOT_ACCEPTABLE);
         }
-
-
         var id = ingredientService.createIngredientReturnId(ingredient);
         IdClass idClass = new IdClass(id);
         return new ResponseEntity(idClass,  HttpStatus.OK);

@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/recipe")
+@RequestMapping("/api/recipe")
 public class RecipeController {
     @Autowired
     private CategoryService categoryService;
@@ -57,7 +57,7 @@ public class RecipeController {
         return new ResponseEntity(new EmptyJSON("ok"),  HttpStatus.OK);
     }
     @PutMapping("/update")
-    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public  ResponseEntity updateRecipe(@Valid @RequestBody Recipe recipe, BindingResult result) throws RecipeNotFoundException {
         if(result.hasErrors()){
             var List = result.getFieldErrors().stream().
@@ -159,6 +159,7 @@ public class RecipeController {
         return new ResponseEntity(new EmptyJSON("ok"),  HttpStatus.OK);
     }
     @PostMapping("/like/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity likeRecipe(@PathVariable Long id){
         likeService.addLike(id);
         return new ResponseEntity<>(HttpStatus.OK);

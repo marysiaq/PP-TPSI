@@ -1,5 +1,7 @@
 import React, { useState,useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import RecipeService from "../services/recipe.service";
+import UserService from "../services/user.service";
 export default function ShowRecipe(props){
     const {id} = useParams();
     const navigate = useNavigate();
@@ -10,10 +12,12 @@ export default function ShowRecipe(props){
     useEffect(() => {
         const fetchData = async () => {
             console.log(id);
+            console.log(await UserService.getAdminBoard());
+            console.log(await UserService.getUserBoard());
 
-            const response = await fetch('/recipe/get/'+id,{method:"GET"});
-            if ( response.ok ) {
-                const body = await response.json();
+            const response =  await RecipeService.getRecipe(id);//await fetch('/recipe/get/'+id,{method:"GET"});
+            if ( response.status ===200 ) {
+                const body = await response.data;
                 setRecipe(body);
                 console.log(body);
             }
@@ -24,9 +28,9 @@ export default function ShowRecipe(props){
                 navigate("/error500");
             }
 
-            const response2 = await fetch('/recipe/getrecipelikes/'+id,{method:"GET"});
-            if ( response2.ok ) {
-                const body = await response2.json();
+            const response2 =await RecipeService.getRecipeLikes(id);// await fetch('/recipe/getrecipelikes/'+id,{method:"GET"});
+            if ( response2.status ===200 ) {
+                const body = await response2.data;
                 setLikes(body);
                 console.log(body);
             }
@@ -36,6 +40,7 @@ export default function ShowRecipe(props){
             if ( response2.status===500 ) {
                 navigate("/error500");
             }
+            
 
         }
         fetchData();
@@ -43,8 +48,8 @@ export default function ShowRecipe(props){
     //const onClickHandler = (e) =>
     const handleDelete =async (e)=>{
         if(!window.confirm("Czy napewno chcesz usunąć ten przepis?"))return;
-        const response = await fetch('/recipe/delete/'+id,{method:"DELETE"});
-            if ( response.ok ) {
+        const response =await RecipeService.deleteRecipe(id)//await fetch('/recipe/delete/'+id,{method:"DELETE"});
+            if ( response.status ===200 ) {
                 navigate("/recipelist");
             }
             if ( response.status===500 ) {
@@ -57,13 +62,17 @@ export default function ShowRecipe(props){
     }
 
     const handleLike = async (e)=>{
-        const response = await fetch('/recipe/like/'+id,{method:"POST"});
-            
+
+        const response =await RecipeService.likeRecipe(id) //await fetch('/recipe/like/'+id,{method:"POST"});
+            console.log(response);
             if ( response.status===500 ) {
                 navigate("/error500");
             }
             if ( response.status===404 ) {
                 navigate("/error404");
+            }
+            if(response.status ===401){
+                navigate("/error401");
             }
 
         setLiked(true);

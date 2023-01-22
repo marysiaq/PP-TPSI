@@ -1,6 +1,7 @@
 
 import React from "react";
 import Units from "./Units";
+import IngredientService from '../services/ingredient.service'
 export default class AddIngredient extends React.Component{
     constructor(props){
         super(props);
@@ -16,7 +17,7 @@ export default class AddIngredient extends React.Component{
          this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleSubmit(event) {
+    async handleSubmit(event) {
         event.preventDefault();
         const newIngredient={
             id:0,
@@ -27,7 +28,31 @@ export default class AddIngredient extends React.Component{
             },
             amount:this.state.amount
         }
-       fetch('/ingredient/create',{method:"POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(newIngredient)}).then(response => response.json())
+        const response = await   IngredientService.createIngredient(newIngredient);
+        if(response.status ===200){
+            let data = response.data;
+            if(data.id){
+                this.props.setNewIngredientId(data.id)
+                this.setState({unit_error:"",name_error:"",amount_error:""})
+            }
+        }
+        if(response.status===406){
+            let data = response.data;
+            if(data.fieldErrors){
+                data.fieldErrors.forEach(fieldError => {
+                    if(fieldError.field === 'name'){
+                        this.setState({name_error:fieldError.message})
+                 }
+                    if(fieldError.field === 'amount'){
+                    this.setState({amount_error:fieldError.message})
+                    }
+                    if(fieldError.field === 'unit'){
+                        this.setState({unit_error:fieldError.message})
+                    }
+                });
+            }
+        }
+       /*fetch('/ingredient/create',{method:"POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(newIngredient)}).then(response => response.json())
        .then(data =>{
         if(data.fieldErrors){
             data.fieldErrors.forEach(fieldError => {
@@ -47,7 +72,7 @@ export default class AddIngredient extends React.Component{
             this.setState({unit_error:"",name_error:"",amount_error:""})
         }
 
-        } );
+        } );*/
        this.setState({name:"",unit_id:1,amount:0});
        
     }

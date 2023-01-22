@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import RecipeService from "../services/recipe.service";
 export default function UploadFile(props){
     const [selectedFile, setSelectedFile] = useState(null);
     //const [fileId,setFileId] = useState(props.fileId);
@@ -8,18 +9,25 @@ export default function UploadFile(props){
         setSelectedFile(e.target.files[0]);
     };
 
-    const onClickHandler = (e) => {
+    const onClickHandler = async (e) => {
         const formData = new FormData();
         formData.append('file', selectedFile);
+        const response =await RecipeService.uploadFile(formData);
+        if(response.status ===200){
+            let data = response.data;
+            console.log(data.id)
+            if(data.id)props.setFileId(data.id);
+        }
+
         //console.log(selectedFile);
-        fetch('/recipe/uploadFile',{
+        /*fetch('/recipe/uploadFile',{
             method: 'post',
             body: formData
         }).then(res => res.json()) .then(data =>{
             console.log(data.id)
             if(data.id)props.setFileId(data.id);
             
-        });
+        });*/
         
     }
 

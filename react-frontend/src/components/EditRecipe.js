@@ -9,6 +9,9 @@ import ShowImage from "./ShowImage";
 import  {Navigate}  from "react-router-dom";
 import withRouter from './withRouter';
 
+import RecipeService from "../services/recipe.service";
+import IngredientService from "../services/ingredient.service";
+
  class EditRecipe extends React.Component{
     
     constructor(props){
@@ -62,24 +65,30 @@ import withRouter from './withRouter';
     }
     async componentDidMount(){
 
-        const response = await fetch('/recipe/get/'+this.state.id,{method:"GET"});
-        if ( response.ok ) {
-            const body = await response.json();
+        const response = await RecipeService.getRecipe(this.state.id) //await fetch('/recipe/get/'+this.state.id,{method:"GET"});
+        if ( response.status ===200 ) {
+            
+            const body = await response.data;
+            
+           // console.log(body);
             let categories = [];
             body.categories.forEach((cat)=>{categories.push(cat.id)})
 
             let ingr = [];
             body.ingredients.forEach((ing)=>{ingr.push(ing.id)})
+            //console.log(ingr);
             let image = 0;
            if(body.photo) image = body.photo.id;
+           console.log("update state")
+           this.updateIngredients(ingr);
             this.setState({dateAdded:body.dateAdded,categories_id:categories,ingredients:ingr,difficulty_id:body.difficulty.id,recipe_name:body.name,preparation:body.preparation,prep_time:body.preparationTime,for_Vegans:body.forVegans,portions:body.portions,image_id:image});
             
-            console.log(body);
         }
         if ( response.status===404 ) {
             this.setState({error404:true});
         }
-        this.updateIngredients();
+        //this.updateIngredients();
+        
     }
 
     async handleSubmit(event) {
@@ -116,9 +125,9 @@ import withRouter from './withRouter';
             );
         });
         console.log(recipe);
-        const response = await fetch('/recipe/update',{method:"PUT",headers:{"Content-Type":"application/json"}, body:JSON.stringify(recipe)});
+        const response = await RecipeService.updateRecipe(recipe)//await fetch('/recipe/update',{method:"PUT",headers:{"Content-Type":"application/json"}, body:JSON.stringify(recipe)});
             if(response.status===406){
-                const body = await response.json();
+                const body = await response.data;
                 if(body.fieldErrors){
                     body.fieldErrors.forEach(fieldError => {
                         if(fieldError.field === 'name'){
@@ -148,7 +157,7 @@ import withRouter from './withRouter';
                     
                     });
             }}
-            if ( response.ok ) {
+            if ( response.status === 200 ) {
                 //const body = await response.json();
                 this.setState({navigateToDetails: true});
                 //console.log(body);
@@ -174,8 +183,8 @@ import withRouter from './withRouter';
         let newIng = this.state.ingredients.slice();
         newIng.push(newid);
 
-        const response = await fetch('/ingredient/list',{method: "POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(newIng)});
-        const body =await  response.json();  
+        const response = await fetch('/api/ingredient/list',{method: "POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(newIng)});
+        const body =await response.json();  
         console.log(body);
 
 
@@ -183,15 +192,19 @@ import withRouter from './withRouter';
         this.cancelAddIngredient();
         
     }
-    async updateIngredients(){
-        const response = await fetch('/ingredient/list',{method: "POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(this.state.ingredients)});
+    async updateIngredients(ingr){
+        console.log("update ingredients")
+        console.log(this.state)
+        //await IngredientService.getIngredientList(this.state.ingredients);//
+        const response = await fetch('/api/ingredient/list',{method: "POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(ingr)});
+        console.log(response);
         const body =await  response.json();  
-        console.log(body);
+        //console.log(body);
         this.setState({ingredients_details: body});
       }
    async handleIngredientDelete(event){
         if(!window.confirm("Czy napewno chcesz usunąć ten składnik?"))return;
-        const response = await fetch('/ingredient/'+event.target.value,{method: "DELETE"});
+        const response = await IngredientService.deleteIngredient(event.target.value)//await fetch('/ingredient/'+event.target.value,{method: "DELETE"});
         console.log(response)
 
         let newArray = this.state.ingredients.slice();
@@ -199,8 +212,8 @@ import withRouter from './withRouter';
 
         
         
-        const response2 = await fetch('/ingredient/list',{method: "POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(this.state.ingredients)});
-        const body =await  response2.json();  
+        const response2 =await IngredientService.getIngredientList(this.state.ingredients) //await fetch('/ingredient/list',{method: "POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(this.state.ingredients)});
+        const body =await  response2.data;  
         console.log(body);
         this.setState({ingredients:newArray, ingredients_details:body})
 

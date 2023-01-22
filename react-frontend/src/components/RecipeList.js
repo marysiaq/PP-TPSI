@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import Categories from "./Categories";
 import DifficultyLevels from "./DifficultyLevels";
 
+import RecipeService from '../services/recipe.service'
+
 
 export default function RecipeList(props){
     const [recipes,setRecipes] = useState(null);
@@ -19,9 +21,9 @@ export default function RecipeList(props){
         console.log(lista.toString());
         const fetchData = async () => {
 
-            const response = await fetch('/recipe/list',{method:"GET"});
-            if ( response.ok ) {
-                const body = await response.json();
+            const response = await RecipeService.getPublicContent("");//await fetch('/recipe/list',{method:"GET"});
+            if ( response.status===200 ) {
+                const body =  response.data;
                 setRecipes(body);
                 //console.log(body);
             }
@@ -43,7 +45,7 @@ export default function RecipeList(props){
     }
 
     const handleSearch = async () =>{
-        console.log(searchName,searchTimeMax,searchTimeMin,categories_id,difficulty_id);
+        //console.log(searchName,searchTimeMax,searchTimeMin,categories_id,difficulty_id);
         var filters = "?";
         if(searchName!=="")filters=filters+"phrase="+searchName+"&"
         if(searchTimeMin!==0)filters=filters+"min="+searchTimeMin+"&"
@@ -53,9 +55,10 @@ export default function RecipeList(props){
             categories_id.forEach((id)=>filters=filters+"categoriesIds="+id+"&");
         }
 
-        const response = await fetch('/recipe/list'+filters,{method:"GET"});
-            if ( response.ok ) {
-                const body = await response.json();
+        const response = await RecipeService.getPublicContent(filters);//await fetch('/recipe/list'+filters,{method:"GET"});
+        console.log(response);
+        if ( response.status===200 ) {
+                const body = await response.data;
                 setRecipes(body);
                 console.log(body);
             }

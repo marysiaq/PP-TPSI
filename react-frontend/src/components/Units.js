@@ -1,5 +1,6 @@
 
 import React from "react";
+import IngredientService from "../services/ingredient.service";
 export default class Units extends React.Component{
     constructor(props){
       super(props);
@@ -9,8 +10,8 @@ export default class Units extends React.Component{
     }
     
     async componentDidMount() {
-        const response = await fetch('/ingredient/units');
-        const body = await response.json();
+        const response = await IngredientService.getUnits();//await fetch('/ingredient/units');
+        const body = await response.data;
         this.setState({units: body});
       }
   

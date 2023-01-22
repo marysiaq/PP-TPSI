@@ -1,12 +1,12 @@
 import React, { useState ,useEffect} from "react";
-
+import RecipeService from '../services/recipe.service'
 export default function DifficultyLevels(props){
     const [difficultyLevels,setDifficultyLevels] = useState([]);
 
      useEffect(() => {
         const fetchData = async () => {
-            const respone = await fetch('/recipe/difficulty',{method:"GET"});
-            const body = await respone.json();
+            const respone = await RecipeService.getDifficulty();//await fetch('/recipe/difficulty',{method:"GET"});
+            const body = await respone.data;
             console.log(body);
             setDifficultyLevels(body);
         }

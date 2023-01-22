@@ -1,20 +1,21 @@
 import React, { useState,useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import RecipeService from '../services/recipe.service'
 export default function Ranking(props){
     const [recipes,setRecipes] = useState(null);
     const navigate = useNavigate();
     useEffect(() => {
         const fetchData = async () => {
-            const response = await fetch('/recipe/getranking',{method:"GET"});
-            if ( response.ok ) {
-                const body = await response.json();
+            const response = await RecipeService.getranking(); //await fetch('/recipe/getranking',{method:"GET"});
+            if ( response.status===200 ) {
+                const body = await response.data;
                 setRecipes(body);
                 console.log(body);
             }
             if ( response.status===404 ) {
                 navigate("/error404");
             }
-            if ( response.status===404 ) {
+            if ( response.status===500 ) {
                 navigate("/error500");
             }
 
