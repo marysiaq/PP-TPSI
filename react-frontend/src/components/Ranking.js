@@ -9,7 +9,8 @@ export default function Ranking(props){
             const response = await RecipeService.getranking(); //await fetch('/recipe/getranking',{method:"GET"});
             if ( response.status===200 ) {
                 const body = await response.data;
-                setRecipes(body);
+
+                if(body.ranking.length>0)setRecipes(body);
                 console.log(body);
             }
             if ( response.status===404 ) {

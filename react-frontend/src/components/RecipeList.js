@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from "react";
-import { Link } from "react-router-dom";
 import Categories from "./Categories";
 import DifficultyLevels from "./DifficultyLevels";
-
+import { Link, useNavigate, useParams } from "react-router-dom";
+import AuthService from '../services/auth.service'
 import RecipeService from '../services/recipe.service'
 
 
@@ -13,12 +13,13 @@ export default function RecipeList(props){
     const [searchName,setSearchName] = useState("");
     const [searchTimeMin,setSearchTimeMin] = useState(0);
     const [searchTimeMax,setSearchTimeMax] = useState(0);
+    const navigate = useNavigate();
+    const [currentUser,setCurrentUser] = useState(null);
 
 
 
     useEffect(() => {
-        const lista = [1,2,3]
-        console.log(lista.toString());
+        
         const fetchData = async () => {
 
             const response = await RecipeService.getPublicContent("");//await fetch('/recipe/list',{method:"GET"});
@@ -27,6 +28,11 @@ export default function RecipeList(props){
                 setRecipes(body);
                 //console.log(body);
             }
+
+            const currentUser = AuthService.getCurrentUser();
+            //console.log(currentUser);
+            setCurrentUser(currentUser)
+            
 
         }
         fetchData();
@@ -77,19 +83,28 @@ export default function RecipeList(props){
         <div>
             <h2>Wyszukiwarka</h2>
             <h3>Nazwa</h3><input type="text" value={searchName} onChange={e => setSearchName(e.target.value)}/>
-            <h3>Czas przygotowania</h3>
-            <label><b>Minimalny:</b><input type="number" min="0" value={searchTimeMin} onChange={e => setSearchTimeMin(e.target.value)} /></label>
-            <label><b>Maksymalny:</b><input type="number" min="0" value={searchTimeMax} onChange={e => setSearchTimeMax(e.target.value)}/></label>
-            <Categories
-                value={categories_id}
-                onChangeValue={handleOnChangeCategories}></Categories>
+            {currentUser!==null&&<>
+                <h3>Czas przygotowania</h3>
+                <label><b>Minimalny:</b><input type="number" min="0" value={searchTimeMin} onChange={e => setSearchTimeMin(e.target.value)} /></label>
+                <label><b>Maksymalny:</b><input type="number" min="0" value={searchTimeMax} onChange={e => setSearchTimeMax(e.target.value)}/></label>
+                <Categories
+                    value={categories_id}
+                    onChangeValue={handleOnChangeCategories}></Categories>
 
-            <DifficultyLevels value={difficulty_id}
+                <DifficultyLevels value={difficulty_id}
                              onChangeValue={handleOnChangeDifficulty} ></DifficultyLevels>
-            <br/>
+            </> }
+                <br/>
+
             <button onClick={handleSearch}>Szukaj</button>
         </div>
-        <Link to="add">Dodaj przepis</Link>
+        {currentUser!==null&&
+        <>
+            {(currentUser.roles.includes("ROLE_ADMIN")) && 
+                <Link to="add">Dodaj przepis</Link>}
+                
+        </>
+        }
         <table>
             <thead>
                 <tr>

@@ -11,12 +11,15 @@ import withRouter from './withRouter';
 
 import RecipeService from "../services/recipe.service";
 import IngredientService from "../services/ingredient.service";
+import AuthService from "../services/auth.service";
 
  class EditRecipe extends React.Component{
     
     constructor(props){
         super(props);
         this.state={
+            currentUser:null,
+
             showIngredientForm:false,
             buttonDisabled:false,
             navigateToDetails:false,
@@ -64,6 +67,9 @@ import IngredientService from "../services/ingredient.service";
 
     }
     async componentDidMount(){
+        const currentUser = AuthService.getCurrentUser();
+
+        this.setState({ currentUser: currentUser})
 
         const response = await RecipeService.getRecipe(this.state.id) //await fetch('/recipe/get/'+this.state.id,{method:"GET"});
         if ( response.status ===200 ) {
@@ -250,6 +256,9 @@ import IngredientService from "../services/ingredient.service";
             <div>
                 {this.state.navigateToDetails&&<Navigate to={`/recipelist/details/${this.state.id}`}/>}
                 {this.state.error404&&<Navigate to={`/error404`}/>}
+                {this.state.currentUser===null&&<Navigate to="/login"/>}
+                {(this.state.currentUser!==null&&!this.state.currentUser.roles.includes('ROLE_ADMIN'))&&<Navigate to="/"/>}
+                
                 <h1>Edytuj przepis</h1>
                 <div >
                     <h3>Składniki:</h3>

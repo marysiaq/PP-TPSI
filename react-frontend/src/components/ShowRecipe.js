@@ -1,19 +1,30 @@
 import React, { useState,useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import RecipeService from "../services/recipe.service";
-import UserService from "../services/user.service";
+import AuthService from "../services/auth.service";
+
 export default function ShowRecipe(props){
     const {id} = useParams();
     const navigate = useNavigate();
     const[recipe,setRecipe] = useState(null);
     const [likes,setLikes] = useState(0);
     const [liked,setLiked] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
-            console.log(id);
-            console.log(await UserService.getAdminBoard());
-            console.log(await UserService.getUserBoard());
+            const currentUser = AuthService.getCurrentUser();
+            setCurrentUser(currentUser);
+            if(currentUser!==null){
+                const response =  await RecipeService.findLike(id,currentUser.id);
+                if ( response.status ===200 ) {
+                    const body = await response.data;
+                    setLiked(body);
+                    //console.log(body);
+                }
+            }
+
+  
 
             const response =  await RecipeService.getRecipe(id);//await fetch('/recipe/get/'+id,{method:"GET"});
             if ( response.status ===200 ) {
@@ -45,7 +56,7 @@ export default function ShowRecipe(props){
         }
         fetchData();
     },[]);
-    //const onClickHandler = (e) =>
+
     const handleDelete =async (e)=>{
         if(!window.confirm("Czy napewno chcesz usunąć ten przepis?"))return;
         const response =await RecipeService.deleteRecipe(id)//await fetch('/recipe/delete/'+id,{method:"DELETE"});
@@ -62,8 +73,8 @@ export default function ShowRecipe(props){
     }
 
     const handleLike = async (e)=>{
-
-        const response =await RecipeService.likeRecipe(id) //await fetch('/recipe/like/'+id,{method:"POST"});
+        console.log(currentUser.id)
+        const response =await RecipeService.likeRecipe(id,currentUser.id) //await fetch('/recipe/like/'+id,{method:"POST"});
             console.log(response);
             if ( response.status===500 ) {
                 navigate("/error500");
@@ -78,6 +89,26 @@ export default function ShowRecipe(props){
         setLiked(true);
         setLikes(likes+1);
 
+    }
+    const handleUnLike = async (e)=>{
+        //console.log(currentUser.id)
+        const response =await RecipeService.unlikeRecipe(id,currentUser.id) //await fetch('/recipe/like/'+id,{method:"POST"});
+            //console.log(response);
+            if ( response.status===500 ) {
+                navigate("/error500");
+            }
+            if ( response.status===404 ) {
+                navigate("/error404");
+            }
+            if(response.status ===401){
+                navigate("/error401");
+            }
+            if(response.status===200){
+                setLiked(false);
+                setLikes(likes-1);
+            }
+
+       
     }
 
     return(
@@ -117,11 +148,18 @@ export default function ShowRecipe(props){
                 
                 <p><b>Data dodania:</b> {recipe.dateAdded}</p>
                 <p><b>Polubienia:</b> {likes}</p>
-                <div>
-                    {liked?<p>Polubiono przepis!</p>:<button onClick={handleLike}>Polub przepis</button>}
-                </div>
-                <Link to={`/recipelist/edit/${recipe.id}`}>Edytuj</Link>
-                <button onClick={handleDelete}>Usuń</button>
+                {currentUser!==null&&  
+                    <div>
+                        {liked?<button onClick={handleUnLike}>Anuluj polubienie</button>:<button onClick={handleLike}>Polub przepis</button>}
+                    </div>
+                }
+
+                {(currentUser!==null&&currentUser.roles.includes('ROLE_ADMIN'))&&
+                   <div>
+                    <Link to={`/recipelist/edit/${recipe.id}`}>Edytuj</Link>
+                    <button onClick={handleDelete}>Usuń</button>
+                    </div>
+                }           
             </div>
            } 
         </div>

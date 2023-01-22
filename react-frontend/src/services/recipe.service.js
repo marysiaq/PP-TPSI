@@ -46,8 +46,18 @@ class RecipeService {
   deleteFile(id){
     return axios.delete(API_URL + 'deleteFile/'+id,id,{ headers: authHeader()}).then((response)=>{ return response}).catch((error)=>{return error.response})
   }
-  likeRecipe(id){
-    return axios.post(API_URL + 'like/'+id,id,{ headers: authHeader()}).then((response)=>{ return response}).catch((error)=>{return error.response})
+  likeRecipe(recipeId,userId){
+    return axios.post(API_URL + 'like',{recipe_id:recipeId,user_id:userId},{ headers: authHeader()}).then((response)=>{ return response}).catch((error)=>{return error.response})
+  }
+
+  findLike(recipeId,userId){
+    return axios.post(API_URL + 'findlike',{recipe_id:recipeId,user_id:userId},{ headers: authHeader()}).then((response)=>{ return response}).catch((error)=>{return error.response})
+  }
+  unlikeRecipe(recipeId,userId){
+    return axios.post(API_URL + 'unlike',{recipe_id:recipeId,user_id:userId},{ headers: authHeader()}).then((response)=>{ return response}).catch((error)=>{return error.response})
+  }
+  getLikedRecipes(userId){
+    return axios.get(API_URL + 'getlikedrecipes/'+userId,{ headers: authHeader()}).then((response)=>{ return response}).catch((error)=>{return error.response})
   }
 
 }

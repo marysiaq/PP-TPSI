@@ -56,6 +56,7 @@ public class RecipeController {
 
         return new ResponseEntity(new EmptyJSON("ok"),  HttpStatus.OK);
     }
+
     @PutMapping("/update")
     @PreAuthorize("hasRole('ADMIN')")
     public  ResponseEntity updateRecipe(@Valid @RequestBody Recipe recipe, BindingResult result) throws RecipeNotFoundException {
@@ -82,6 +83,7 @@ public class RecipeController {
     }
 
     @DeleteMapping(value = "/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public  ResponseEntity deleteRecipe(@PathVariable long id) throws RecipeNotFoundException {
         recipeService.deleteRecipeById(id);
         return new ResponseEntity(HttpStatus.OK);
@@ -140,6 +142,7 @@ public class RecipeController {
     }
 
     @PostMapping(value = "/uploadFile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity uploadFile(@RequestParam MultipartFile file) throws IOException {
         ImageFile img = new ImageFile(file.getOriginalFilename(),file.getBytes());
         var id = imageFileService.createFileReturnId(new ImageFile(null,file.getOriginalFilename(),file.getBytes()));
@@ -153,17 +156,42 @@ public class RecipeController {
     }
 
     @DeleteMapping(value="/deleteFile/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public  ResponseEntity deleteImage(@PathVariable long id) {
 
         imageFileService.deleteImageById(id);
         return new ResponseEntity(new EmptyJSON("ok"),  HttpStatus.OK);
     }
-    @PostMapping("/like/{id}")
+    @PostMapping("/like")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-    public ResponseEntity likeRecipe(@PathVariable Long id){
-        likeService.addLike(id);
+    public ResponseEntity likeRecipe(@RequestBody LikeData likeData) throws RecipeNotFoundException {
+        likeService.addLike(likeData.getRecipe_id(),likeData.getUser_id());
         return new ResponseEntity<>(HttpStatus.OK);
 
     }
+
+    @PostMapping("/findlike")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    public ResponseEntity findLike(@RequestBody LikeData likeData) throws RecipeNotFoundException {
+        return new ResponseEntity<>(likeService.findLike(likeData.getRecipe_id(),likeData.getUser_id()),HttpStatus.OK);
+
+    }
+    @PostMapping("/unlike")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    public ResponseEntity unlikeRecipe(@RequestBody LikeData likeData) throws RecipeNotFoundException {
+        likeService.unlikeRecipe(likeData.getRecipe_id(),likeData.getUser_id());
+        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
+    @GetMapping("/getlikedrecipes/{user_id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    public ResponseEntity getlLikedRecipes(@PathVariable Long user_id) throws RecipeNotFoundException {
+        var dto =likeService.getLikedRecipes(user_id).stream().map(e -> {
+            return modelMapper.map(e,RecipeDTO.class);
+        }).collect(Collectors.toList());;
+        return new ResponseEntity<>(dto,HttpStatus.OK);
+
+    }
+
 
 }

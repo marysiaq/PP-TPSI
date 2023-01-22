@@ -21,7 +21,14 @@ public class Like {
     @JoinColumn(name = "recipe_id")
     private Recipe recipe;
 
-    public Like(Recipe recipe) {
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+
+    public Like(Recipe recipe, User user) {
         this.recipe = recipe;
+        this.user = user;
     }
 }

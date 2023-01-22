@@ -5,17 +5,19 @@ import AddIngredient from "./AddIngredient";
 import ShowIngredients from "./ShowIngredients";
 import DifficultyLevels from "./DifficultyLevels";
 import UploadFile from "./UploadFile";
-import ChangeFile from "./ChangeFile";
 import ShowImage from "./ShowImage";
 import  {Navigate}  from "react-router-dom";
 import RecipeService from "../services/recipe.service";
 import IngredientService from "../services/ingredient.service";
+import AuthService from "../services/auth.service";
 
 export default class AddRecipe extends React.Component{
     
     constructor(){
         super();
         this.state={
+            currentUser:null,
+
             showIngredientForm:false,
             buttonDisabled:false,
             navigateToList:false,
@@ -61,7 +63,11 @@ export default class AddRecipe extends React.Component{
 
     }
     componentDidMount(){
-        this.updateIngredients();
+        const currentUser = AuthService.getCurrentUser();
+
+        this.setState({ currentUser: currentUser})
+        
+         this.updateIngredients();
     }
 
     async handleSubmit(event) {
@@ -236,6 +242,8 @@ export default class AddRecipe extends React.Component{
             <div>
                 {this.state.navigateToList&&<Navigate to="/recipelist"/>}
                 {this.state.error401&&<Navigate to="/error401"/>}
+                {this.state.currentUser===null&&<Navigate to="/login"/>}
+                {(this.state.currentUser!==null&&!this.state.currentUser.roles.includes('ROLE_ADMIN'))&&<Navigate to="/"/>}
                 <div >
                     <h3>Składniki:</h3>
                         <ShowIngredients ingredients={this.state.ingredients_details} 

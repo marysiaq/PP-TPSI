@@ -11,6 +11,7 @@ import com.example.spring.services.UnitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,15 +35,17 @@ public class IngredientController {
     }
     @PostMapping("/list" )
     public List<Ingredient> getIngredients(@RequestBody List<Long> ids){
-        System.out.println("sdfffffffffffffffffffffffffffffffffffffffffffffffff"+ingredientService.getIngredients(ids));
+        //System.out.println("sdfffffffffffffffffffffffffffffffffffffffffffffffff"+ingredientService.getIngredients(ids));
         return ingredientService.getIngredients(ids);
     }
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteIngredient(@PathVariable long id) {
         ingredientService.deleteIngredientById(id);
     }
 
     @PutMapping("/")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> updateIngredient(@Valid @RequestBody Ingredient ingredient , BindingResult result) {
         if(result.hasErrors()){
             var List = result.getFieldErrors().stream().
@@ -61,6 +64,7 @@ public class IngredientController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> createIngredientReturnId (@Valid @RequestBody Ingredient ingredient, BindingResult result){
         if(result.hasErrors()){
             var List = result.getFieldErrors().stream().
