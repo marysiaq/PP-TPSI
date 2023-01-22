@@ -8,6 +8,7 @@ import UploadFile from "./UploadFile";
 import ChangeFile from "./ChangeFile";
 import ShowImage from "./ShowImage";
 import  {Navigate}  from "react-router-dom";
+import RecipeService from "../services/recipe.service";
 
 export default class AddRecipe extends React.Component{
     
@@ -38,6 +39,8 @@ export default class AddRecipe extends React.Component{
             ingredients_error:"",
             image_error:"",
             error_message:"",
+
+            error401:false,
 
 
             
@@ -104,8 +107,10 @@ export default class AddRecipe extends React.Component{
             );
         });
         console.log(recipe);
-        const response = await fetch('/recipe/create',{method:"POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(recipe)});
-            if(response.status===406){
+
+        const response = RecipeService.createRecipe(recipe)//await fetch('/recipe/create',{method:"POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(recipe)});
+            console.log(response)
+        if(response.status===406){
                 const body = await response.json();
                 if(body.fieldErrors){
                     body.fieldErrors.forEach(fieldError => {
@@ -136,51 +141,15 @@ export default class AddRecipe extends React.Component{
                     
                     });
             }}
+            if(response.status===401){
+                this.setState({error401:true});
+            }
             if ( response.ok ) {
                 const body = await response.json();
                 this.setState({navigateToList: true});
                 console.log(body);
             }
-        /*fetch('/recipe/create',{method:"POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(recipe)})
-            .then((response) =>
-                response.json()
-            )
-            .then((data) => {
-                if(data.fieldErrors){
-                    data.fieldErrors.forEach(fieldError => {
-                        if(fieldError.field === 'name'){
-                            this.setState({name_error:fieldError.message})
-                     }
-                        if(fieldError.field === 'preparation'){
-                        this.setState({preparation_error:fieldError.message})
-                        }
-                        if(fieldError.field === 'preparationTime'){
-                            this.setState({prep_time_error:fieldError.message})
-                        }
-                        if(fieldError.field === 'categories'){
-                            this.setState({categories_error:fieldError.message})
-                        }
-                        if(fieldError.field === 'ingredients'){
-                            this.setState({ingredients_error:fieldError.message})
-                        }
-                        if(fieldError.field === 'difficulty'){
-                            this.setState({difficulty_error:fieldError.message})
-                        }
-                        if(fieldError.field === 'portions'){
-                            this.setState({portions_error:fieldError.message})
-                        }
-                        if(fieldError.field ==='photo'){
-                            this.setState({image_error:fieldError.message})
-                        }
-                    
-                    });
-                }
-                if(data.ok){
-                    this.setState({navigateToList: true});
-                }
-                
-           })
-            .catch((err) => alert(err));*/
+      
 
     }
     handleOnChangeCategories(e){
@@ -263,6 +232,7 @@ export default class AddRecipe extends React.Component{
         return (
             <div>
                 {this.state.navigateToList&&<Navigate to="/recipelist"/>}
+                {this.state.error401&&<Navigate to="/error401"/>}
                 <div >
                     <h3>Składniki:</h3>
                         <ShowIngredients ingredients={this.state.ingredients_details} 
@@ -340,7 +310,7 @@ export default class AddRecipe extends React.Component{
 
                 <input type="submit" value="Dodaj"/>
                 <br/>
-                <span > {this.state.error_message} </span>
+                {this.state.error_message!==""&&<span className="alert alert-danger" > {this.state.error_message} </span>}
             </form>
             <button onClick={this.handleCancelAddRecipe}>Anuluj</button>
             

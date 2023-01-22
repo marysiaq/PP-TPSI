@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/recipe")
 public class RecipeController {
@@ -39,6 +40,7 @@ public class RecipeController {
 
     private final ModelMapper modelMapper = new ModelMapper();
     @PostMapping("/create")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> createRecipe (@Valid @RequestBody Recipe recipe, BindingResult result){
         if(result.hasErrors()){
             var List = result.getFieldErrors().stream().
@@ -55,6 +57,7 @@ public class RecipeController {
         return new ResponseEntity(new EmptyJSON("ok"),  HttpStatus.OK);
     }
     @PutMapping("/update")
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public  ResponseEntity updateRecipe(@Valid @RequestBody Recipe recipe, BindingResult result) throws RecipeNotFoundException {
         if(result.hasErrors()){
             var List = result.getFieldErrors().stream().
