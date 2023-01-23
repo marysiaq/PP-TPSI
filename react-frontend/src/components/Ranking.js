@@ -25,18 +25,18 @@ export default function Ranking(props){
         fetchData();
     },[]);
 
-    return(<div>
+    return(<div className="container">
         {recipes!==null?
             <div>
-                <h1>Ranking przepisów</h1>
-                <table>
-                <thead>
-                    <tr><th> </th><th> </th><th>Polubienia:</th></tr>
+                <h1 className="jumbotron">Ranking przepisów</h1>
+                <table className="table table-bordered table-striped table-hover">
+                <thead className="thead-light">
+                    <tr ><th scope="col"> # </th><th scope="col"> </th><th scope="col">Polubienia:</th></tr>
                 </thead>
                 
                     <tbody>
                         {
-                            recipes.ranking.map((recipe,index)=>(<tr key={index}><td><b>{index + 1}.</b></td><td>{recipe.recipeName}</td><td>{recipe.amount}</td><td><Link to={`/recipelist/details/${recipe.recipeId}`}> Szczegóły</Link></td></tr>))
+                            recipes.ranking.map((recipe,index)=>(<tr scope="row" key={index}><td><b>{index + 1}.</b></td><td>{recipe.recipeName}</td><td>{recipe.amount}</td><td><Link to={`/recipelist/details/${recipe.recipeId}`}> Szczegóły</Link></td></tr>))
                         }
                     </tbody>
                 </table>

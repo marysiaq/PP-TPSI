@@ -112,23 +112,23 @@ export default function ShowRecipe(props){
     }
 
     return(
-        <div>  
+        <div className="container">  
            {recipe!==null&&
             <div>
-                <h2>{recipe.name}</h2>
+                <h2 className="jumbotron">{recipe.name}</h2>
                 
                 <p><b>Poziom trudności: </b>  {recipe.difficulty.level}</p>
-                <h4>Kategorie:</h4>
+                <p><b>Kategorie:</b></p>
                 {
                         recipe.categories.map((category) => (
-                            <p key={category.id} >{category.name}</p>
+                            <li key={category.id} >{category.name}</li>
                         ))
                 }
-                
+                <br/>
                 <p><b>Ilość porcji:</b> {recipe.portions}</p>
                 <p><b>Czas przygotowania: </b> {recipe.preparationTime} min</p>
                 <p><b>Odpowiedni dla wegan: </b> {recipe.forVegans?<i>tak</i>:<i>nie</i>}</p>
-                <h3>Składniki:</h3>
+                <p><b>Składniki:</b></p>
                 <ul>
                     {
                         recipe.ingredients.map((ingredient) => (
@@ -136,28 +136,32 @@ export default function ShowRecipe(props){
                         ))
                     }
                 </ul>
-                <h3>Przygotowanie:</h3>
+                <p><b>Przygotowanie:</b></p>
                 <p>{recipe.preparation}</p>
                 {recipe.photo===null?<span><i>Brak zdjęcia</i></span>:
                 <>
-                    <h4>Zdjęcie:</h4>
+                    <p><b>Zdjęcie:</b></p>
                     <img width="350" alt="gotowe jedzonko" src={`data:image/jpeg;base64,${recipe.photo.photoContent}`}/>
                 </>
                 }
                 
                 
                 <p><b>Data dodania:</b> {recipe.dateAdded}</p>
+                <div>
                 <p><b>Polubienia:</b> {likes}</p>
                 {currentUser!==null&&  
                     <div>
-                        {liked?<button onClick={handleUnLike}>Anuluj polubienie</button>:<button onClick={handleLike}>Polub przepis</button>}
+                        {liked?<button className="btn btn-primary" onClick={handleUnLike}>Anuluj polubienie</button>:<button className="btn btn-primary" onClick={handleLike}>Polub przepis</button>}
                     </div>
                 }
+                </div>
+
+                <br/>
 
                 {(currentUser!==null&&currentUser.roles.includes('ROLE_ADMIN'))&&
                    <div>
-                    <Link to={`/recipelist/edit/${recipe.id}`}>Edytuj</Link>
-                    <button onClick={handleDelete}>Usuń</button>
+                    <Link className="btn btn-primary" to={`/recipelist/edit/${recipe.id}`}>Edytuj </Link>
+                    <button className="btn btn-primary"  onClick={handleDelete}> Usuń</button>
                     </div>
                 }           
             </div>

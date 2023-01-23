@@ -33,6 +33,8 @@ public class User {
 
     private boolean enabled = false;
 
+    private String activationCode;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(	name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),

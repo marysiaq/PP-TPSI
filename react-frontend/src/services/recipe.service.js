@@ -23,7 +23,7 @@ class RecipeService {
     return axios.get(API_URL + 'getrecipelikes/'+id).then((response)=>{ return response}).catch((error)=>{return error.response});
   }
   deleteRecipe(id){
-    return axios.delete(API_URL + 'delete/'+id,id,{ headers: authHeader()}).then((response)=>{ return response}).catch((error)=>{return error.response});
+    return axios.delete(API_URL + 'delete/'+id,{ headers: authHeader()}).then((response)=>{ return response}).catch((error)=>{return error.response});
   }
 
   getRecipe(id){
@@ -44,7 +44,7 @@ class RecipeService {
     return axios.get(API_URL + 'getFile/'+id).then((response)=>{ return response}).catch((error)=>{return error.response})
   }
   deleteFile(id){
-    return axios.delete(API_URL + 'deleteFile/'+id,id,{ headers: authHeader()}).then((response)=>{ return response}).catch((error)=>{return error.response})
+    return axios.delete(API_URL + 'deleteFile/'+id,{ headers: authHeader()}).then((response)=>{ return response}).catch((error)=>{return error.response})
   }
   likeRecipe(recipeId,userId){
     return axios.post(API_URL + 'like',{recipe_id:recipeId,user_id:userId},{ headers: authHeader()}).then((response)=>{ return response}).catch((error)=>{return error.response})

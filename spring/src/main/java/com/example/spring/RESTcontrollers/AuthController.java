@@ -1,10 +1,9 @@
 package com.example.spring.RESTcontrollers;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 import com.example.spring.models.ERole;
@@ -16,9 +15,11 @@ import com.example.spring.payload.response.JwtResponse;
 import com.example.spring.payload.response.MessageResponse;
 import com.example.spring.repositories.RoleRepository;
 import com.example.spring.repositories.UserRepository;
-import com.example.spring.security.jwt.JwtUtils;
-import com.example.spring.security.services.UserDetailsImpl;
+import com.example.spring.configurations.security.jwt.JwtUtils;
+import com.example.spring.configurations.security.services.UserDetailsImpl;
+import com.example.spring.services.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,6 +39,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
+	@Autowired
+	EmailService emailService;
 	@Autowired
 	AuthenticationManager authenticationManager;
 
@@ -59,6 +63,12 @@ public class AuthController {
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
+		Optional<User> user = userRepository.findByUsername(loginRequest.getUsername());
+		if(user.isPresent()){
+			if(!user.get().isEnabled()) return new ResponseEntity("Konto nie jest aktywne!", HttpStatus.I_AM_A_TEAPOT);
+		}
+
+
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String jwt = jwtUtils.generateJwtToken(authentication);
 		
@@ -75,7 +85,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/signup")
-	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest, BindingResult bindingResult) {
+	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest, BindingResult bindingResult) throws MessagingException {
 		System.out.println(signUpRequest.getPassword());
 		if (userRepository.existsByUsername(signUpRequest.getUsername())) {
 			return ResponseEntity
@@ -89,7 +99,6 @@ public class AuthController {
 					.body(new MessageResponse("E-mail jest już używany!"));
 		}
 
-		// Create new user's account
 		User user = new User(signUpRequest.getUsername(),
 							 signUpRequest.getEmail(),
 							 encoder.encode(signUpRequest.getPassword()));
@@ -125,7 +134,10 @@ public class AuthController {
 		}
 
 		user.setRoles(roles);;
+		user.setActivationCode(UUID.randomUUID().toString());
 		userRepository.save(user);
+		emailService.sendMimeMessage(user.getEmail(),"Aktywacja konta", emailService.build("Witaj!","Aktywacja konta","Przejdź pod adres: ",user.getActivationCode()));
+
 
 		return ResponseEntity.ok(new MessageResponse("Rejestracja się powiodła!"));
 	}

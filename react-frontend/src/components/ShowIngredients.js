@@ -46,7 +46,7 @@ export default class ShowIngredients extends React.Component{
                                                                                     id ={ingredient.id} 
                                                                                     onCancel={this.cancelEdit} 
                                                                                     onUpdate={this.props.onUpdate}></EditIngredient> </li>
-                                                                    : <li >{ingredient.name} - {ingredient.amount} {ingredient.unit.name}<button value={ingredient.id} onClick={this.props.onDelete}> Usuń </button> <button value={ingredient.id} onClick={this.handleEdit}>Edytuj</button></li>}
+                                                                    : <li >{ingredient.name} - {ingredient.amount} {ingredient.unit.name}   <button className="btn btn-primary" value={ingredient.id} onClick={this.props.onDelete}> Usuń </button> <button className="btn btn-primary" value={ingredient.id} onClick={this.handleEdit}>Edytuj</button></li>}
                         </div>
                     ))
                 }

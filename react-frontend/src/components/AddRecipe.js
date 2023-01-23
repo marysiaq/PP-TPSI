@@ -17,6 +17,7 @@ export default class AddRecipe extends React.Component{
         super();
         this.state={
             currentUser:null,
+            redirect:null,
 
             showIngredientForm:false,
             buttonDisabled:false,
@@ -64,8 +65,13 @@ export default class AddRecipe extends React.Component{
     }
     componentDidMount(){
         const currentUser = AuthService.getCurrentUser();
+        
+        //console.log(currentUser);
+        if(currentUser===null) this.setState({redirect:"/"})
+        if(currentUser!==null&&!currentUser.roles.includes("ROLE_ADMIN"))this.setState({redirect:"/"});
 
-        this.setState({ currentUser: currentUser})
+
+        
         
          this.updateIngredients();
     }
@@ -189,14 +195,15 @@ export default class AddRecipe extends React.Component{
         
     }
     async updateIngredients(){
+       const currentUser = AuthService.getCurrentUser();
         const response = await IngredientService.getIngredientList(this.state.ingredients)//event.target.value //await fetch('/ingredient/list',{method: "POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(this.state.ingredients)});
         const body =await  response.data;  
         console.log(body);
-        this.setState({ingredients_details: body});
+        this.setState({ingredients_details: body,currentUser: currentUser});
       }
    async handleIngredientDelete(event){
         if(!window.confirm("Czy napewno chcesz usunąć ten składnik?"))return;
-        const response =IngredientService.deleteIngredient(event.target.value); //await fetch('/ingredient/'+event.target.value,{method: "DELETE"});
+        const response =await IngredientService.deleteIngredient(event.target.value); //await fetch('/ingredient/'+event.target.value,{method: "DELETE"});
         //console.log(response)
 
         let newArray = this.state.ingredients.slice();
@@ -204,7 +211,7 @@ export default class AddRecipe extends React.Component{
 
         
         
-        const response2 =await  IngredientService.getIngredientList(this.state.ingredients);//await fetch('/ingredient/list',{method: "POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(this.state.ingredients)});
+        const response2 =await  IngredientService.getIngredientList(newArray);//await fetch('/ingredient/list',{method: "POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(this.state.ingredients)});
         const body =await  response2.data;  
         console.log(body);
         this.setState({ingredients:newArray, ingredients_details:body})
@@ -237,96 +244,104 @@ export default class AddRecipe extends React.Component{
     }
 
     render() {
+        if(this.state.redirect)return <Navigate to={this.state.redirect}/>
+        console.log(this.state.currentUser)
     
         return (
             <div>
-                {this.state.navigateToList&&<Navigate to="/recipelist"/>}
-                {this.state.error401&&<Navigate to="/error401"/>}
-                {this.state.currentUser===null&&<Navigate to="/login"/>}
-                {(this.state.currentUser!==null&&!this.state.currentUser.roles.includes('ROLE_ADMIN'))&&<Navigate to="/"/>}
-                <div >
-                    <h3>Składniki:</h3>
-                        <ShowIngredients ingredients={this.state.ingredients_details} 
-                        onDelete={this.handleIngredientDelete}
-                        onUpdate={this.onIngredientUpdate}>
+                {this.state.navigateToList && <Navigate to="/recipelist" />}
+                {this.state.error401 && <Navigate to="/error401" />}
+
+                <h1 className="jumbotron">Dodaj przepis</h1>
+                <div>
+                    <label><b>Składniki:</b></label>
+                    {this.state.ingredients_details.length > 0 ?
+                        <ShowIngredients ingredients={this.state.ingredients_details}
+                            onDelete={this.handleIngredientDelete}
+                            onUpdate={this.onIngredientUpdate}>
 
                         </ShowIngredients>
-
-                    <button onClick={this.showAddIngredientForm}  disabled={this.state.buttonDisabled}>Dodaj składnik</button>
-                    {this.state.showIngredientForm  &&
+                        : <p>Brak składników</p>}
+                    <button className="btn btn-primary" onClick={this.showAddIngredientForm} disabled={this.state.buttonDisabled}>Dodaj składnik</button>
+                    {this.state.showIngredientForm &&
                         <div>
                             <AddIngredient
                                 setNewIngredientId={this.setNewIngredientId}>
 
-                                </AddIngredient>
-                            <button onClick={this.cancelAddIngredient}>Anuluj</button>
-                        </div>
-                    }
-                    <br/>
-                    <span > {this.state.ingredients_error}</span>
+                            </AddIngredient>
+                            <button className="btn btn-primary" onClick={this.cancelAddIngredient}>Anuluj</button>
+                        </div>}
+                    <br />
+                    <span style={{ color: 'red' }}> {this.state.ingredients_error}</span>
                 </div>
 
                 <div>
-                <label>
-                    <h3>Zdjęcie:</h3>
-                        {this.state.image_id===0&&
-                            <UploadFile setFileId={this.setFileId}></UploadFile>}
-                        {this.state.image_id!==0&&
-                            <ShowImage imageId={this.state.image_id} setFileId={this.setFileId} ></ShowImage>
-                        }
-                       
-                    
-                </label>
+                    <label><b>Zdjęcie</b></label>
+                    {this.state.image_id === 0 &&
+                        <UploadFile setFileId={this.setFileId}></UploadFile>}
+                    {this.state.image_id !== 0 &&
+                        <ShowImage imageId={this.state.image_id} setFileId={this.setFileId}></ShowImage>}
                 </div>
-            <form onSubmit={this.handleSubmit} >
-                
-                <Categories value={this.state.categories_id}
-                             onChangeValue={this.handleOnChangeCategories}></Categories>
-                <span > {this.state.categories_error} </span>
+                <form onSubmit={this.handleSubmit}>
 
-                <DifficultyLevels value={this.state.difficulty_id}
-                             onChangeValue={this.handleOnChangeDifficulty}></DifficultyLevels>
-                <br/>
-                <span > {this.state.difficulty_error} </span>
-                <label>
-                    <h3>Nazwa:</h3>   
-                    <input type="text" value={this.state.recipe_name} onChange={(e) => this.setState({recipe_name: e.target.value})}/>
-                    <br/>
-                   <span > {this.state.name_error} </span>
-                </label> 
+                    <Categories value={this.state.categories_id}
+                        onChangeValue={this.handleOnChangeCategories}></Categories>
+                    <span style={{ color: 'red' }}> {this.state.categories_error} </span>
 
-                <label>
-                    <h3>Przygotowanie:</h3>   
-                    <textarea cols="50" rows="20" width="auto" height="auto" value={this.state.preparation} onChange={(e) => this.setState({preparation: e.target.value})}></textarea>
-                    <br/>
-                    <span > {this.state.preparation_error} </span>
-                </label> 
+                    <DifficultyLevels value={this.state.difficulty_id}
+                        onChangeValue={this.handleOnChangeDifficulty}></DifficultyLevels>
+                    <br />
+                    <span style={{ color: 'red' }}> {this.state.difficulty_error} </span>
 
-                <label>
-                    <h3>Czas przygotowania (minuty):</h3>   
-                    <input type="number" min="1"  value={this.state.prep_time} onChange={(e) => this.setState({prep_time: e.target.value})}/>
-                    <br/>
-                    <span > {this.state.prep_time_error} </span>
-                </label> 
-                <label>
-                    <h3>Ilość porcji:</h3>   
-                    <input type="number" min="1"  value={this.state.portions} onChange={(e) => this.setState({portions: e.target.value})}/>
-                    <br/>
-                    <span > {this.state.portions_error} </span>
-                </label>
-                <label>
-                    <h3>Odpowiedni dla vegan: <input type="checkbox"  checked={this.state.for_Vegans} onChange={this.handleForVegansChange}/></h3>   
-                </label> 
-                
+                    <div className="form-row">
+                        <div className="col">
+                            <label><b>Nazwa:</b></label>
+                            <input className="form-control" type="text" value={this.state.recipe_name} onChange={(e) => this.setState({ recipe_name: e.target.value })} />
+                            <span style={{ color: 'red' }}> {this.state.name_error} </span>
+                        </div>
+                    </div>
+                    <div className="form-row">
+                        <div className="col">
+                            <label><b>Przygotowanie</b></label>
+                            <textarea className="form-control"  rows="10" width="auto" height="auto" value={this.state.preparation} onChange={(e) => this.setState({ preparation: e.target.value })}></textarea>
+                            <br />
+                            <span style={{ color: 'red' }}> {this.state.preparation_error} </span>
 
-                <input type="submit" value="Dodaj"/>
-                <br/>
-                {this.state.error_message!==""&&<span className="alert alert-danger" > {this.state.error_message} </span>}
+                        </div>
+                    </div>
+                    <div className="form-row">
+                        <div className="col">
+                            <label><b>Czas przygotowania (min)</b></label>
+                            <input className="form-control" type="number" min="1" value={this.state.prep_time} onChange={(e) => this.setState({ prep_time: e.target.value })} />
+                            <br />
+                            <span style={{ color: 'red' }}> {this.state.prep_time_error} </span>
+                        </div>
+                    </div>
+
+                    <div className="form-row">
+                        <div className="col">
+                            <label><b>Ilość porcji</b></label>
+                            <input className="form-control" type="number" min="1" value={this.state.portions} onChange={(e) => this.setState({ portions: e.target.value })} />
+                            <br />
+                            <span style={{ color: 'red' }}> {this.state.portions_error} </span>
+                        </div>
+                    </div>
+
+                    <div className="form-row">
+                        <div className="col">
+                            <label><b>Odpowiedni dla vegan:</b> <input type="checkbox" checked={this.state.for_Vegans} onChange={this.handleForVegansChange} /></label>
+                        </div>
+                    </div>
+                    <div className="form-row">
+                        <div className="col">
+                        <input className="btn btn-primary" type="submit" value="Dodaj" /><br />
+                    </div>
+                </div>
             </form>
-            <button onClick={this.handleCancelAddRecipe}>Anuluj</button>
-            
-            </div>
-            );
+            <br/>
+            <button className="btn btn-primary" onClick={this.handleCancelAddRecipe}>Anuluj</button>
+        </div>
+    );
             
     }
 }

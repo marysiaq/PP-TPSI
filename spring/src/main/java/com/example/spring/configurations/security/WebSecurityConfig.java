@@ -1,8 +1,8 @@
-package com.example.spring.security;
+package com.example.spring.configurations.security;
 
-import com.example.spring.security.jwt.AuthEntryPointJwt;
-import com.example.spring.security.jwt.AuthTokenFilter;
-import com.example.spring.security.services.UserDetailsServiceImpl;
+import com.example.spring.configurations.security.jwt.AuthEntryPointJwt;
+import com.example.spring.configurations.security.jwt.AuthTokenFilter;
+import com.example.spring.configurations.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +14,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 //import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 //import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -99,7 +98,7 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
         .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
         .authorizeRequests().antMatchers("/api/auth/**").permitAll()
-        .antMatchers("/api/test/**").permitAll().antMatchers("/api/recipe/**").permitAll().mvcMatchers("/api/ingredient/**").permitAll()
+        .antMatchers("/api/test/**").permitAll().antMatchers("/api/recipe/**").permitAll().antMatchers("/activate**").permitAll().antMatchers("/").permitAll().antMatchers("/api/user/**").permitAll().antMatchers("/api/ingredient/**").permitAll()
             .antMatchers(WebSecurityConfig.AUTH_WHITELIST).anonymous()
         .anyRequest().authenticated();
     

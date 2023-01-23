@@ -104,7 +104,7 @@ class App extends Component {
       </nav>
       <div className="container mt-3">
       <Routes>
-        <Route path='/'element={<RecipeList />}/>
+        <Route path='/'element={<RecipeList  />}/>
         <Route path="recipelist" element={<RecipeList />} />
         <Route path="recipelist/details/:id" element={<ShowRecipe/>}/>
         <Route path="recipelist/edit/:id"  element={<EditRecipe/>}/>
@@ -115,7 +115,7 @@ class App extends Component {
         <Route path="/error401" element={<Error401/>}/>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile" element={<Profile logout={this.logOut} />} />
       
       </Routes>
       </div>

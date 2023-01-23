@@ -2,10 +2,13 @@
 import React from "react";
 import Units from "./Units";
 import IngredientService from '../services/ingredient.service'
+import { Navigate, redirect } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 export default class AddIngredient extends React.Component{
     constructor(props){
         super(props);
         this.state={
+            redirect:null,
             amount: 0,
             name: "",
             unit_id:1,
@@ -52,6 +55,10 @@ export default class AddIngredient extends React.Component{
                 });
             }
         }
+        if(response.status===500){
+           this.setState({redirect:"error500"});
+
+        }
        /*fetch('/ingredient/create',{method:"POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(newIngredient)}).then(response => response.json())
        .then(data =>{
         if(data.fieldErrors){
@@ -78,41 +85,44 @@ export default class AddIngredient extends React.Component{
     }
 
     render() {
+        if(this.state.redirect) return (<Navigate to={this.state.redirect}/>);
     
         return (
             
             <form onSubmit={this.handleSubmit}>
-                <div>
-                <label>
-                Nazwa:
-                    <input type="text"
-                        value={this.state.name}
-                        onChange={(e) => this.setState({name: e.target.value})}/>
+                <div className="form-row">
+                <div className="col-md-4 mb-3">
+                    <label><b>Nazwa:</b></label>
+                     <input className="form-control"  type="text"
+                         value={this.state.name}
+                            onChange={(e) => this.setState({name: e.target.value})}/>
                         
-                </label>
-                <span>{this.state.name_error}</span>
-                <br/>
+                    <span style={{ color: 'red' }} >{this.state.name_error}</span>
+                
                 </div>
-                <div>
-                <label>
-                Ilość:
-                    <input type="number"
+                <div className="col-md-4 mb-3">
+                    <label><b>Ilość: </b></label>
+                    <input className="form-control"  type="number"
                         value={this.state.amount}
                         onChange={(e) => this.setState({amount: e.target.value})}/>
-                </label>
-                <span>{this.state.amount_error}</span>
-                <br/>
+                
+                <span style={{ color: 'red' }}>{this.state.amount_error}</span>
                 </div>
-                <div>
-                <label>
-                Jednostka miary:
+                
+                
+                <div className="col-md-4 mb-3">
+                <label > <b>Jednostka miary:</b></label>
                     <Units value={this.state.unit_id}
                         onChangeValue={(event) => this.setState({unit_id:event.target.value})}></Units>
-                </label>
-                <br/>
-                <span>{this.state.unit_error}</span>
+                
+                <span style={{ color: 'red' }}>{this.state.unit_error}</span>
                 </div>
-                <input type="submit" value="Dodaj"/>
+               
+                <div className="col-md-4 mb-3">
+                <input className="btn btn-primary"  type="submit" value="Dodaj"/>
+                </div>
+                </div>
+                
             </form>
             
             );

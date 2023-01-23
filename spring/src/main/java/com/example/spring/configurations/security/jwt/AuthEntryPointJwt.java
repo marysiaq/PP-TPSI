@@ -1,4 +1,4 @@
-package com.example.spring.security.jwt;
+package com.example.spring.configurations.security.jwt;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -33,14 +33,14 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
     final Map<String, Object> body = new HashMap<>();
     body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
     body.put("error", "Unauthorized");
-   // body.put("message", authException.getMessage());
-    body.put("message","Niepoprawne dane logowania!");
+   //
+    if(authException.getMessage().equals("Bad credentials"))body.put("message","Niepoprawne dane logowania!");
+    else body.put("message", authException.getMessage());
     body.put("path", request.getServletPath());
 
     final ObjectMapper mapper = new ObjectMapper();
     mapper.writeValue(response.getOutputStream(), body);
 
-//    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: Unauthorized");
   }
 
 }

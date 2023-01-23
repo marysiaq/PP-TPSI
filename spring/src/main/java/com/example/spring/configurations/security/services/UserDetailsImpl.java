@@ -1,4 +1,4 @@
-package com.example.spring.security.services;
+package com.example.spring.configurations.security.services;
 
 import java.util.Collection;
 import java.util.List;

@@ -7,15 +7,15 @@ export default function DifficultyLevels(props){
         const fetchData = async () => {
             const respone = await RecipeService.getDifficulty();//await fetch('/recipe/difficulty',{method:"GET"});
             const body = await respone.data;
-            console.log(body);
+            //console.log(body);
             setDifficultyLevels(body);
         }
         fetchData();
     }, []);
     return(
-        <>
-        <h3>Poziom trudności: </h3>
-        <select value={props.value} onChange={props.onChangeValue}>
+        <div>
+        <label className="my-1 mr-2" ><b>Poziom trudności</b></label>
+        <select className="custom-select my-1 mr-sm-2" value={props.value} onChange={props.onChangeValue}>
             <option disabled  value="0" > -- wybierz z listy -- </option>
             {
                 difficultyLevels.map((level) => (
@@ -24,7 +24,7 @@ export default function DifficultyLevels(props){
             }
 
         </select>
-        </>
+        </div>
     );
 
 }

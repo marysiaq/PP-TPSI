@@ -89,38 +89,37 @@ export default function EditIngredient(props){
     }
     return(
         <div>
-            <div>
-            <label>
-                Nazwa:
-                    <input type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}/>
-                </label>
-                <br/>
-                <span>{name_error}</span>
+            <div className="form-row">
+                <div className="col-md-4 mb-3">
+                    <label><b>Nazwa:</b></label>
+                     <input className="form-control"  type="text"
+                         value={name}
+                            onChange={(e) => setName( e.target.value)}/>
+                        
+                    <span style={{ color: 'red' }} >{name_error}</span>
+                
                 </div>
-                <div>
-                <label>
-                Ilość:
-                    <input type="number"
+                <div className="col-md-4 mb-3">
+                    <label><b>Ilość: </b></label>
+                    <input className="form-control"  type="number"
                         value={amount}
-                        onChange={(e) => setAmount(e.target.value)}/>
-                </label>
-                <br/>
-                <span>{amount_error}</span>
+                        onChange={(e) => setAmount( e.target.value)}/>
+                
+                <span style={{ color: 'red' }}>{amount_error}</span>
                 </div>
-                <div>
-                <label>
-                Jednostka miary:
-                    <Units value={unit_id} 
-                        onChangeValue={handleOnChange}></Units>
-                </label>
-                <br/>
-                <span>{unit_error}</span>
+                
+                
+                <div className="col-md-4 mb-3">
+                <label > <b>Jednostka miary:</b></label>
+                    <Units value={unit_id}
+                        onChangeValue={(event) => setUnit_id( event.target.value)}></Units>
+                
+                <span style={{ color: 'red' }}>{unit_error}</span>
                 </div>
-        
-            <button onClick={handleSubmit}>Zapisz</button>
-            <button onClick={props.onCancel}>Anuluj</button>
+                </div>
+                 
+            <button className="btn btn-primary" onClick={handleSubmit}>Zapisz</button>
+            <button className="btn btn-primary" onClick={props.onCancel}>Anuluj</button>
         </div>
         
     );

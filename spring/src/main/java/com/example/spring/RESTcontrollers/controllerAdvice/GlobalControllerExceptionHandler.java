@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 @ControllerAdvice
 public class GlobalControllerExceptionHandler {
 
-    @ResponseStatus(value = HttpStatus.NOT_FOUND,reason = "Nie znaleziono przepisu")  // 409
+    @ResponseStatus(value = HttpStatus.NOT_FOUND,reason = "Nie znaleziono przepisu")
     @ExceptionHandler(RecipeNotFoundException.class)
     public void handleRecipeNotFound() {
 

@@ -62,6 +62,15 @@ class Login extends Component {
           window.location.reload();
         },
         error => {
+          //console.log(error.response.status);
+         if(error.response.status===418){
+          //console.log("stan");
+          this.setState({
+            loading: false,
+            message: error.response.data
+          });
+         }
+         else{
           const resMessage =
             (error.response &&
               error.response.data &&
@@ -73,7 +82,7 @@ class Login extends Component {
             loading: false,
             message: resMessage
           });
-        }
+        }}
       );
     } else {
       this.setState({

@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from "react";
 import Categories from "./Categories";
 import DifficultyLevels from "./DifficultyLevels";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthService from '../services/auth.service'
 import RecipeService from '../services/recipe.service'
+import "bootstrap/dist/css/bootstrap.min.css";
 
 
 export default function RecipeList(props){
@@ -78,15 +79,24 @@ export default function RecipeList(props){
     }
     
     return(
-    <div>
-        <h1>Lista przepisów</h1>
+    <div className="container">
+        <h1 className="jumbotron" >Lista przepisów</h1>
         <div>
             <h2>Wyszukiwarka</h2>
-            <h3>Nazwa</h3><input type="text" value={searchName} onChange={e => setSearchName(e.target.value)}/>
+            <div className="form-row">
+            <div className="col">
+                <label><b>Nazwa</b></label>
+                <input className="form-control" type="text" value={searchName} onChange={e => setSearchName(e.target.value)}/>
+            </div>
+            </div>
             {currentUser!==null&&<>
-                <h3>Czas przygotowania</h3>
-                <label><b>Minimalny:</b><input type="number" min="0" value={searchTimeMin} onChange={e => setSearchTimeMin(e.target.value)} /></label>
-                <label><b>Maksymalny:</b><input type="number" min="0" value={searchTimeMax} onChange={e => setSearchTimeMax(e.target.value)}/></label>
+                <label><b>Czas przygotowania</b></label> 
+                <div className="form-row">
+                    
+                    <div className="col"><label>Minimalny:</label><input className="form-control" type="number" min="0" value={searchTimeMin} onChange={e => setSearchTimeMin(e.target.value)} /></div>
+                    <div className="col"><label>Maksymalny:</label><input  className="form-control" type="number" min="0" value={searchTimeMax} onChange={e => setSearchTimeMax(e.target.value)}/></div>
+                </div>
+
                 <Categories
                     value={categories_id}
                     onChangeValue={handleOnChangeCategories}></Categories>
@@ -96,38 +106,39 @@ export default function RecipeList(props){
             </> }
                 <br/>
 
-            <button onClick={handleSearch}>Szukaj</button>
+            <button className="btn btn-primary " onClick={handleSearch}>Szukaj</button>
         </div>
+        <br/>
         {currentUser!==null&&
-        <>
+        <div>
             {(currentUser.roles.includes("ROLE_ADMIN")) && 
-                <Link to="add">Dodaj przepis</Link>}
+                <Link className="btn btn-primary" to="add">Dodaj przepis</Link>}
                 
-        </>
+        </div>
         }
-        <table>
-            <thead>
+        <table className="table table-bordered table-striped table-hover">
+            <thead className="thead-light">
                 <tr>
-                    <th><b>Nazwa</b></th>
-                    <th><b>Poziom trudności</b></th>
-                    <th><b>Czas przygotownia</b></th>
-                    <th><b>Ilość porcji</b></th>
-                    <th><b>Dla wegan</b></th>
+                    <th scope="col"><b>Nazwa</b></th>
+                    <th scope="col"><b>Poziom trudności</b></th>
+                    <th scope="col"><b>Czas przygotownia</b></th>
+                    <th scope="col"><b>Ilość porcji</b></th>
+                    <th scope="col"><b>Dla wegan</b></th>
+                    <th scope="col"><b>   </b></th>
                 </tr>
             </thead>
             <tbody>
                 {recipes!==null&&
                 
                     recipes.map((recipe)=>(
-                        <tr  key={recipe.id}>
+                        <tr scope="row" key={recipe.id}>
                             <td>{recipe.name}</td>
                             <td>{recipe.difficultyLevel}</td>
                             <td>{recipe.preparationTime}</td>
                             <td>{recipe.portions}</td>
                             {recipe.forVegans?<td>tak</td>:<td>nie</td>}
-                            <td><Link to={`details/${recipe.id}`}> Szczegóły</Link></td>
-                            <td></td>
-                            <td></td>
+                            <td><Link className="btn btn-primary" to={`details/${recipe.id}`}> Szczegóły</Link></td>
+                        
                         </tr> 
                     ))
             }

@@ -1,4 +1,4 @@
-package com.example.spring.security.services;
+package com.example.spring.configurations.security.services;
 
 import com.example.spring.models.User;
 import com.example.spring.repositories.UserRepository;
@@ -20,7 +20,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
   @Transactional
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     User user = userRepository.findByUsername(username)
-        .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+        .orElseThrow(() -> new UsernameNotFoundException("Nie znaleziono użytkownika: " + username));
 
     return UserDetailsImpl.build(user);
   }

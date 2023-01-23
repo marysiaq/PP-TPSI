@@ -36,7 +36,7 @@ export default function ShowImage(props){
         <div>
             <img width="350" alt="gotowe jedzonko" src={`data:image/jpeg;base64,${content}`}/>
             <br/>
-            <button onClick={onClickHandler}>Usuń</button>
+            <button className="btn btn-primary" onClick={onClickHandler}>Usuń</button>
         </div>
     );
 }

@@ -1,11 +1,20 @@
 
 import React, { useState } from "react";
 import RecipeService from "../services/recipe.service";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { useEffect } from "react";
+
 export default function UploadFile(props){
     const [selectedFile, setSelectedFile] = useState(null);
+    const [message,setMessage] = useState();
     //const [fileId,setFileId] = useState(props.fileId);
+    
 
     const onFileChangeHandler = (e) => {
+            var fileName = document.getElementById("customFileLang").files[0].name;
+            var nextSibling = e.target.nextElementSibling
+            nextSibling.innerText = fileName
+        
         setSelectedFile(e.target.files[0]);
     };
 
@@ -17,6 +26,11 @@ export default function UploadFile(props){
             let data = response.data;
             console.log(data.id)
             if(data.id)props.setFileId(data.id);
+            setMessage("");
+        }
+        if(response.status === 400){
+            let data = response.data;
+            setMessage("Nie wybrano pliku!");
         }
 
         //console.log(selectedFile);
@@ -32,16 +46,17 @@ export default function UploadFile(props){
     }
 
     return(
-        <div className="container">
-            <div className="row">
-                <div className="col-md-6">
-                    <div className="form-group files color">
-                            <label>Prześlij zdjęcie </label>
-                            <input type="file" className="form-control" name="file" onChange={onFileChangeHandler}/>
-                    </div>
-                    <button onClick={onClickHandler}>Prześlij</button>
+        <div >
+            
+                <div className="custom-file">
+                         
+                        <input type="file" className="custom-file-input" id="customFileLang"  onChange={onFileChangeHandler}/>
+                        <label className="custom-file-label">Wybierz plik</label>
                 </div>
-            </div>
+                <br/>
+                <span style={{ color: 'red' }} >{message}</span>
+                <br/>
+                <button className="btn btn-primary" onClick={onClickHandler}>Prześlij</button>
         </div>
     )
 }

@@ -6,7 +6,7 @@ import ShowIngredients from "./ShowIngredients";
 import DifficultyLevels from "./DifficultyLevels";
 import UploadFile from "./UploadFile";
 import ShowImage from "./ShowImage";
-import  {Navigate}  from "react-router-dom";
+import  {Navigate, redirect}  from "react-router-dom";
 import withRouter from './withRouter';
 
 import RecipeService from "../services/recipe.service";
@@ -19,6 +19,7 @@ import AuthService from "../services/auth.service";
         super(props);
         this.state={
             currentUser:null,
+            redirect:null,
 
             showIngredientForm:false,
             buttonDisabled:false,
@@ -68,26 +69,28 @@ import AuthService from "../services/auth.service";
     }
     async componentDidMount(){
         const currentUser = AuthService.getCurrentUser();
-
-        this.setState({ currentUser: currentUser})
+        //console.log(currentUser);
+        if(currentUser===null) this.setState({redirect:"/"})
+        if(currentUser!==null&&!currentUser.roles.includes("ROLE_ADMIN"))this.setState({redirect:"/"});
+      
 
         const response = await RecipeService.getRecipe(this.state.id) //await fetch('/recipe/get/'+this.state.id,{method:"GET"});
         if ( response.status ===200 ) {
             
             const body = await response.data;
             
-           // console.log(body);
+         
             let categories = [];
             body.categories.forEach((cat)=>{categories.push(cat.id)})
 
             let ingr = [];
             body.ingredients.forEach((ing)=>{ingr.push(ing.id)})
-            //console.log(ingr);
+          
             let image = 0;
            if(body.photo) image = body.photo.id;
-           console.log("update state")
-           this.updateIngredients(ingr);
-            this.setState({dateAdded:body.dateAdded,categories_id:categories,ingredients:ingr,difficulty_id:body.difficulty.id,recipe_name:body.name,preparation:body.preparation,prep_time:body.preparationTime,for_Vegans:body.forVegans,portions:body.portions,image_id:image});
+
+            this.updateIngredients(ingr);
+            this.setState({currentUser: currentUser,dateAdded:body.dateAdded,categories_id:categories,ingredients:ingr,difficulty_id:body.difficulty.id,recipe_name:body.name,preparation:body.preparation,prep_time:body.preparationTime,for_Vegans:body.forVegans,portions:body.portions,image_id:image});
             
         }
         if ( response.status===404 ) {
@@ -199,14 +202,13 @@ import AuthService from "../services/auth.service";
         
     }
     async updateIngredients(ingr){
-        console.log("update ingredients")
-        console.log(this.state)
-        //await IngredientService.getIngredientList(this.state.ingredients);//
+
         const response = await fetch('/api/ingredient/list',{method: "POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(ingr)});
         console.log(response);
         const body =await  response.json();  
-        //console.log(body);
-        this.setState({ingredients_details: body});
+        const currentUser = AuthService.getCurrentUser();
+
+        this.setState({ingredients_details: body,currentUser: currentUser});
       }
    async handleIngredientDelete(event){
         if(!window.confirm("Czy napewno chcesz usunąć ten składnik?"))return;
@@ -234,11 +236,11 @@ import AuthService from "../services/auth.service";
         
     }
     handleForVegansChange(event){
-        console.log(event.target.checked);
+
         this.setState({for_Vegans:event.target.checked});
     }
     handleOnChangeDifficulty(event){
-        console.log(event.target.value)
+
         this.setState({difficulty_id:parseInt(event.target.value)});
     }
     async setFileId(id)
@@ -250,99 +252,107 @@ import AuthService from "../services/auth.service";
     }
 
     render() {
-        console.log(this.state.ingredients_details)
-    
+        if(this.state.redirect)return <Navigate to={this.state.redirect}/>
+        console.log(this.state.currentUser)
+        //{this.state.currentUser===null&&<Navigate to="/login"/>}
+        //{(this.state.currentUser!==null&&!this.state.currentUser.roles.includes('ROLE_ADMIN'))&&<Navigate to="/"/>}
+                
         return (
-            <div>
+            <div className="container">
                 {this.state.navigateToDetails&&<Navigate to={`/recipelist/details/${this.state.id}`}/>}
                 {this.state.error404&&<Navigate to={`/error404`}/>}
-                {this.state.currentUser===null&&<Navigate to="/login"/>}
-                {(this.state.currentUser!==null&&!this.state.currentUser.roles.includes('ROLE_ADMIN'))&&<Navigate to="/"/>}
                 
-                <h1>Edytuj przepis</h1>
-                <div >
-                    <h3>Składniki:</h3>
-                        <ShowIngredients ingredients={this.state.ingredients_details} 
-                        onDelete={this.handleIngredientDelete}
-                        onUpdate={this.onIngredientUpdate}>
+                <h1 className="jumbotron">Edytuj przepis</h1>
+                <div>
+                    <label><b>Składniki:</b></label>
+                    {this.state.ingredients_details.length > 0 ?
+                        <ShowIngredients ingredients={this.state.ingredients_details}
+                            onDelete={this.handleIngredientDelete}
+                            onUpdate={this.onIngredientUpdate}>
 
                         </ShowIngredients>
-
-                    <button onClick={this.showAddIngredientForm}  disabled={this.state.buttonDisabled}>Dodaj składnik</button>
-                    {this.state.showIngredientForm  &&
+                        : <p>Brak składników</p>}
+                    <button className="btn btn-primary" onClick={this.showAddIngredientForm} disabled={this.state.buttonDisabled}>Dodaj składnik</button>
+                    {this.state.showIngredientForm &&
                         <div>
                             <AddIngredient
                                 setNewIngredientId={this.setNewIngredientId}>
 
-                                </AddIngredient>
-                            <button onClick={this.cancelAddIngredient}>Anuluj</button>
-                        </div>
-                    }
-                    <br/>
-                    <span > {this.state.ingredients_error}</span>
+                            </AddIngredient>
+                            <button className="btn btn-primary" onClick={this.cancelAddIngredient}>Anuluj</button>
+                        </div>}
+                    <br />
+                    <span style={{ color: 'red' }}> {this.state.ingredients_error}</span>
                 </div>
 
                 <div>
-                <label>
-                    <h3>Zdjęcie:</h3>
-                        {this.state.image_id===0&&
-                            <UploadFile setFileId={this.setFileId}></UploadFile>}
-                        {this.state.image_id!==0&&
-                            <ShowImage imageId={this.state.image_id} setFileId={this.setFileId} ></ShowImage>
-                        }
-                       
-                    
-                </label>
+                    <label><b>Zdjęcie</b></label>
+                    {this.state.image_id === 0 &&
+                        <UploadFile setFileId={this.setFileId}></UploadFile>}
+                    {this.state.image_id !== 0 &&
+                        <ShowImage imageId={this.state.image_id} setFileId={this.setFileId}></ShowImage>}
                 </div>
-            <form onSubmit={this.handleSubmit} >
-                
-                <Categories value={this.state.categories_id}
-                             onChangeValue={this.handleOnChangeCategories}></Categories>
-                <span > {this.state.categories_error} </span>
+                <form onSubmit={this.handleSubmit}>
 
-                <DifficultyLevels value={this.state.difficulty_id}
-                             onChangeValue={this.handleOnChangeDifficulty}></DifficultyLevels>
-                <br/>
-                <span > {this.state.difficulty_error} </span>
-                <label>
-                    <h3>Nazwa:</h3>   
-                    <input type="text" value={this.state.recipe_name} onChange={(e) => this.setState({recipe_name: e.target.value})}/>
-                    <br/>
-                   <span > {this.state.name_error} </span>
-                </label> 
+                    <Categories value={this.state.categories_id}
+                        onChangeValue={this.handleOnChangeCategories}></Categories>
+                    <span> {this.state.categories_error} </span>
 
-                <label>
-                    <h3>Przygotowanie:</h3>   
-                    <textarea cols="50" rows="20" width="auto" height="auto" value={this.state.preparation} onChange={(e) => this.setState({preparation: e.target.value})}></textarea>
-                    <br/>
-                    <span > {this.state.preparation_error} </span>
-                </label> 
+                    <DifficultyLevels value={this.state.difficulty_id}
+                        onChangeValue={this.handleOnChangeDifficulty}></DifficultyLevels>
+                    <br />
+                    <span style={{ color: 'red' }}> {this.state.difficulty_error} </span>
 
-                <label>
-                    <h3>Czas przygotowania (minuty):</h3>   
-                    <input type="number" min="1"  value={this.state.prep_time} onChange={(e) => this.setState({prep_time: e.target.value})}/>
-                    <br/>
-                    <span > {this.state.prep_time_error} </span>
-                </label> 
-                <label>
-                    <h3>Ilość porcji:</h3>   
-                    <input type="number" min="1"  value={this.state.portions} onChange={(e) => this.setState({portions: e.target.value})}/>
-                    <br/>
-                    <span > {this.state.portions_error} </span>
-                </label>
-                <label>
-                    <h3>Odpowiedni dla vegan: <input type="checkbox"  checked={this.state.for_Vegans} onChange={this.handleForVegansChange}/></h3>   
-                </label> 
-                
+                    <div className="form-row">
+                        <div className="col">
+                            <label><b>Nazwa:</b></label>
+                            <input className="form-control" type="text" value={this.state.recipe_name} onChange={(e) => this.setState({ recipe_name: e.target.value })} />
+                            <span style={{ color: 'red' }}> {this.state.name_error} </span>
+                        </div>
+                    </div>
+                    <div className="form-row">
+                        <div className="col">
+                            <label><b>Przygotowanie</b></label>
+                            <textarea className="form-control"  rows="10" width="auto" height="auto" value={this.state.preparation} onChange={(e) => this.setState({ preparation: e.target.value })}></textarea>
+                            <br />
+                            <span style={{ color: 'red' }}> {this.state.preparation_error} </span>
 
-                <input type="submit" value="Zapisz"/>
-                <br/>
-                <span > {this.state.error_message} </span>
+                        </div>
+                    </div>
+                    <div className="form-row">
+                        <div className="col">
+                            <label><b>Czas przygotowania (min)</b></label>
+                            <input className="form-control" type="number" min="1" value={this.state.prep_time} onChange={(e) => this.setState({ prep_time: e.target.value })} />
+                            <br />
+                            <span style={{ color: 'red' }}> {this.state.prep_time_error} </span>
+                        </div>
+                    </div>
+
+                    <div className="form-row">
+                        <div className="col">
+                            <label><b>Ilość porcji</b></label>
+                            <input className="form-control" type="number" min="1" value={this.state.portions} onChange={(e) => this.setState({ portions: e.target.value })} />
+                            <br />
+                            <span style={{ color: 'red' }}> {this.state.portions_error} </span>
+                        </div>
+                    </div>
+
+                    <div className="form-row">
+                        <div className="col">
+                            <label><b>Odpowiedni dla vegan:</b> <input type="checkbox" checked={this.state.for_Vegans} onChange={this.handleForVegansChange} /></label>
+                        </div>
+                    </div>
+                    <div className="form-row">
+                        <div className="col">
+                        <input className="btn btn-primary" type="submit" value="Zapisz" /><br />
+                    </div>
+                </div>
             </form>
-            <button onClick={this.handleCancelEditRecipe}>Anuluj</button>
+            <br/>
+            <button className="btn btn-primary" onClick={this.handleCancelEditRecipe}>Anuluj</button>
             
-            </div>
-            );
+        </div>
+    );
             
     }
 }

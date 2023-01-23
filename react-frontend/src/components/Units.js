@@ -17,7 +17,7 @@ export default class Units extends React.Component{
   
     render() {  
         return (
-            <select value={this.props.value} onChange={this.props.onChangeValue} >
+            <select className="custom-select my-1 mr-sm-2" value={this.props.value} onChange={this.props.onChangeValue} >
                 {this.state.units.map(unit =>
                     <option id ={"id"+unit.id} key={unit.id} value={unit.id}  >{unit.name}</option>
               )}

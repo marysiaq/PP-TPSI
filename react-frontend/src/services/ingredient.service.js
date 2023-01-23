@@ -16,7 +16,7 @@ class IngredientService {
         return axios.get(API_URL + id,{ headers: authHeader()}).then((response)=>{ return response}).catch((error)=>{return error.response});
     }
     deleteIngredient(id){
-        return axios.delete(API_URL + id, id,{ headers: authHeader()}).then((response)=>{ return response}).catch((error)=>{return error.response});
+        return axios.delete(API_URL + id, { headers: authHeader()}).then((response)=>{ return response}).catch((error)=>{return error.response});
     }
 
     updateIngredient(ingredient){
