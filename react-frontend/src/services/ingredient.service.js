@@ -5,7 +5,7 @@ const API_URL = 'http://localhost:8080/api/ingredient/';
 
 class IngredientService {
     getIngredientList(ids) {
-        //return axios.post(API_URL +'list',{ids:ids});
+
         return axios.post(API_URL + 'list', ids).then((response)=>{ return response}).catch((error)=>{return error.response});
       }
     getUnits(){

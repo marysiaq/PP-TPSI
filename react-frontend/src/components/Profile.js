@@ -31,6 +31,10 @@ export default class Profile extends Component {
       console.log(body);
       this.setState({ currentUser: currentUser, userReady: true ,likedRecipes:body})
     }
+    if(response.status===401){
+      this.props.logout();
+      this.setState({ redirect: "/" });
+    }
 
   }
   async handleDelete(e){
@@ -84,9 +88,9 @@ export default class Profile extends Component {
                 {this.state.likedRecipes!==null&&
                 
                 this.state.likedRecipes.map((recipe)=>(
-                        <tr scope="row" key={recipe.id}>
+                        <tr  key={recipe.id}>
                             <td>{recipe.name}</td>
-                            <td><Link to={`/recipelist/details/${recipe.id}`}> Szczegóły</Link></td>
+                            <td><Link className="btn btn-primary" to={`/recipelist/details/${recipe.id}`}> Szczegóły</Link></td>
                             
                         </tr> 
                     ))

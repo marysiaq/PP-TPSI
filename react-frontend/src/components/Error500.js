@@ -1,7 +1,8 @@
-import React, { useState,useEffect } from "react";
+import React from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function Error500(){
-    return(<div>
+    return(<div className="jumbotron">
         <h1>500!</h1>
         <p>Błąd serwera!</p>
     </div>);

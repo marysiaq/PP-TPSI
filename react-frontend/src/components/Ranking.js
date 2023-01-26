@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import RecipeService from '../services/recipe.service'
 export default function Ranking(props){
     const [recipes,setRecipes] = useState(null);
@@ -36,7 +36,7 @@ export default function Ranking(props){
                 
                     <tbody>
                         {
-                            recipes.ranking.map((recipe,index)=>(<tr scope="row" key={index}><td><b>{index + 1}.</b></td><td>{recipe.recipeName}</td><td>{recipe.amount}</td><td><Link to={`/recipelist/details/${recipe.recipeId}`}> Szczegóły</Link></td></tr>))
+                            recipes.ranking.map((recipe,index)=>(<tr  key={index}><td><b>{index + 1}.</b></td><td>{recipe.recipeName}</td><td>{recipe.amount}</td><td><Link className="btn btn-primary" to={`/recipelist/details/${recipe.recipeId}`}> Szczegóły</Link></td></tr>))
                         }
                     </tbody>
                 </table>

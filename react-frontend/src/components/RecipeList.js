@@ -112,7 +112,7 @@ export default function RecipeList(props){
         {currentUser!==null&&
         <div>
             {(currentUser.roles.includes("ROLE_ADMIN")) && 
-                <Link className="btn btn-primary" to="add">Dodaj przepis</Link>}
+                <Link className="btn btn-primary" to="/recipelist/add">Dodaj przepis</Link>}
                 
         </div>
         }
@@ -131,13 +131,13 @@ export default function RecipeList(props){
                 {recipes!==null&&
                 
                     recipes.map((recipe)=>(
-                        <tr scope="row" key={recipe.id}>
+                        <tr key={recipe.id}>
                             <td>{recipe.name}</td>
                             <td>{recipe.difficultyLevel}</td>
                             <td>{recipe.preparationTime}</td>
                             <td>{recipe.portions}</td>
                             {recipe.forVegans?<td>tak</td>:<td>nie</td>}
-                            <td><Link className="btn btn-primary" to={`details/${recipe.id}`}> Szczegóły</Link></td>
+                            <td><Link className="btn btn-primary" to={`/recipelist/details/${recipe.id}`}> Szczegóły</Link></td>
                         
                         </tr> 
                     ))

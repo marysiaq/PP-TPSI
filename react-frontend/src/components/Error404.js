@@ -1,7 +1,8 @@
-import React, { useState,useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import React from "react";
+
+import "bootstrap/dist/css/bootstrap.min.css";
 export default function Error404(){
-    return(<div>
+    return(<div className="jumbotron">
         <h1>404!</h1>
         <p>Nie znaleziono!</p>
     </div>);

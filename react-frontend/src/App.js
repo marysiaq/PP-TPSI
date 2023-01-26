@@ -1,12 +1,12 @@
 
 import './App.css';
-import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route, Router } from "react-router-dom";
+
+import {  Routes, Route } from "react-router-dom";
 import AddRecipe from './components/AddRecipe';
-import UploadFile from './components/UploadFile';
+
 import ShowRecipe from './components/ShowRecipe';
 import RecipeList from './components/RecipeList';
-import Layout from './components/Layout';
+
 import Error404 from './components/Error404';
 import EditRecipe from './components/EditRecipe';
 import Error500 from './components/Error500';
@@ -14,12 +14,13 @@ import Ranking from './components/Ranking';
 import Login from './components/Login'
 import Register from './components/Register';
 import Profile from './components/Profile'
-import Home from './components/Home';
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Component } from 'react';
 import AuthService from "./services/auth.service";
 import { Link } from 'react-router-dom';
 import Error401 from './components/Error401';
+import { NoMatch } from './components/NoMatch';
 
 
 
@@ -116,9 +117,15 @@ class App extends Component {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile logout={this.logOut} />} />
-      
+        <Route path="*" element={<NoMatch />} />
       </Routes>
       </div>
+      <footer class="card text-center">
+      <div class="card-body">
+        
+        <p class="card-text">Kisiążka kucharska</p>
+      </div>
+      </footer>
     </>
 )}}
 

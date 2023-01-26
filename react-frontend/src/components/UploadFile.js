@@ -50,7 +50,7 @@ export default function UploadFile(props){
             
                 <div className="custom-file">
                          
-                        <input type="file" className="custom-file-input" id="customFileLang"  onChange={onFileChangeHandler}/>
+                        <input type="file" className="custom-file-input" id="customFileLang" accept="image/png, image/jpeg" onChange={onFileChangeHandler}/>
                         <label className="custom-file-label">Wybierz plik</label>
                 </div>
                 <br/>
