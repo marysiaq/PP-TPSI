@@ -98,10 +98,10 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
         .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
         .authorizeRequests().antMatchers("/api/auth/**").permitAll()
-        .antMatchers("/api/test/**").permitAll().antMatchers("/api/recipe/**").permitAll().antMatchers("/activate**").permitAll().antMatchers("/").permitAll().antMatchers("/api/user/**").permitAll().antMatchers("/api/ingredient/**").permitAll()
-            .antMatchers(WebSecurityConfig.AUTH_WHITELIST).anonymous()
+        .antMatchers("/api/test/**").permitAll().antMatchers("/api/recipe/**").permitAll().antMatchers("/activate**").permitAll().antMatchers("/").permitAll().antMatchers("/api/user/**").permitAll().antMatchers("/api/ingredient/**").permitAll().antMatchers(WebSecurityConfig.AUTH_WHITELIST).anonymous().antMatchers("/h2-console/**","/h2-console/login.do**").permitAll()
         .anyRequest().authenticated();
-    
+
+
     http.authenticationProvider(authenticationProvider());
 
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

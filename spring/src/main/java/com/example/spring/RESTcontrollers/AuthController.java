@@ -63,10 +63,10 @@ public class AuthController {
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-		Optional<User> user = userRepository.findByUsername(loginRequest.getUsername());
-		if(user.isPresent()){
-			if(!user.get().isEnabled()) return new ResponseEntity("Konto nie jest aktywne!", HttpStatus.I_AM_A_TEAPOT);
-		}
+		//Optional<User> user = userRepository.findByUsername(loginRequest.getUsername());
+		//if(user.isPresent()){
+			//if(!user.get().isEnabled()) return new ResponseEntity("Konto nie jest aktywne!", HttpStatus.I_AM_A_TEAPOT);
+		//}
 
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -136,7 +136,7 @@ public class AuthController {
 		user.setRoles(roles);;
 		user.setActivationCode(UUID.randomUUID().toString());
 		userRepository.save(user);
-		emailService.sendMimeMessage(user.getEmail(),"Aktywacja konta", emailService.build("Witaj!","Aktywacja konta","Przejdź pod adres: ",user.getActivationCode()));
+		//emailService.sendMimeMessage(user.getEmail(),"Aktywacja konta", emailService.build("Witaj!","Aktywacja konta","Przejdź pod adres: ",user.getActivationCode()));
 
 
 		return ResponseEntity.ok(new MessageResponse("Rejestracja się powiodła!"));

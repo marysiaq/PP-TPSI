@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -20,7 +21,7 @@ public class Ingredient {
     @NotNull(message = "Należy wybrać jednostkę!")
     @ManyToOne
     private Unit unit;
-    @Min(value = 1,message = "Ilość powinna wynosić co najmniej 1!")
+    @DecimalMin(value = "0.1", message = "Ilość powinna wynosić co najmniej 0.1!")
     private float amount;
     public Ingredient(String name, Unit unit, float amount) {
         this.name = name;
