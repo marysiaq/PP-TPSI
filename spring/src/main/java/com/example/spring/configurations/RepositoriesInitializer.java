@@ -52,7 +52,7 @@ public class RepositoriesInitializer {
                 roleRepository.save(r2);
             }
             if(userRepository.findAll().isEmpty()){
-                User admin = new User("Admin","admin@email.com",encoder.encode("admin@123"));
+                User admin = new User("admin","admin@email.com",encoder.encode("admin@123"));
                 Set<Role> rolesadmin = new HashSet<>();
                 rolesadmin.add(roleRepository.findByName(ERole.ROLE_ADMIN).get());
                 admin.setRoles(rolesadmin);
@@ -66,7 +66,7 @@ public class RepositoriesInitializer {
                 userRepository.save(adminuser);
 
 
-                User user1 = new User("User1","user1@email.com",encoder.encode("user1"));
+                User user1 = new User("user1","user1@email.com",encoder.encode("user1"));
                 Set<Role> rolesuser1 = new HashSet<>();
                 rolesuser1.add(roleRepository.findByName(ERole.ROLE_USER).get());
                 user1.setRoles(rolesuser1);
