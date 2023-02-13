@@ -13,7 +13,8 @@ import Error500 from './components/Error500';
 import Ranking from './components/Ranking';
 import Login from './components/Login'
 import Register from './components/Register';
-import Profile from './components/Profile'
+import Profile from './components/Profile';
+import CategoriesList from './components/CategoriesList';
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Component } from 'react';
@@ -58,6 +59,7 @@ class App extends Component {
 
 
   render(){
+    console.log(this.state.currentUser)
   return (
     <>
       <nav  className="navbar navbar-expand navbar-dark bg-dark">
@@ -72,6 +74,11 @@ class App extends Component {
           <li className="nav-item">
             <Link to="/ranking" className="nav-link">Ranking</Link>
           </li>
+          {(this.state.currentUser&&this.state.currentUser.roles.includes("ROLE_ADMIN"))&&
+              <li className="nav-item">
+              <Link to="/adminpanel" className="nav-link"> Panel administratora</Link>
+            </li>
+          }
           
         </div>
         {this.state.currentUser ? (
@@ -118,12 +125,13 @@ class App extends Component {
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile logout={this.logOut} />} />
         <Route path="*" element={<NoMatch />} />
+        <Route path="/adminpanel" element={<CategoriesList/>} />
       </Routes>
       </div>
-      <footer class="card text-center">
-      <div class="card-body">
+      <footer className="card text-center">
+      <div className="card-body">
         
-        <p class="card-text">Kisiążka kucharska</p>
+        <p className="card-text">Kisiążka kucharska</p>
       </div>
       </footer>
     </>

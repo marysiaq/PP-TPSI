@@ -12,6 +12,7 @@ export default class Profile extends Component {
     this.state = {
       redirect: null,
       userReady: false,
+      editEmailForm:false,
       likedRecipes:[],
       currentUser: { }
     };

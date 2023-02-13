@@ -110,6 +110,29 @@ export default function ShowRecipe(props){
 
        
     }
+    const handleDownloadPdf = async (e)=>{
+        const response =await RecipeService.getPdf(id);
+
+        if ( response.status===500 ) {
+            navigate("/error500");
+        }
+        if ( response.status===404 ) {
+            navigate("/error404");
+        }
+        if(response.status ===401){
+            navigate("/error401");
+        }
+        console.log(response.data)
+        if(response.status===200){
+            const blob=new Blob([response.data]);
+            const fileURL = window.URL.createObjectURL(blob);
+            // Setting various property values
+            let alink = document.createElement('a');
+            alink.href = fileURL;
+            alink.download = 'przepis.pdf';
+            alink.click();
+        }
+    }
 
     return(
         <div className="container">  
@@ -163,7 +186,9 @@ export default function ShowRecipe(props){
                     <Link className="btn btn-primary" to={`/recipelist/edit/${recipe.id}`}>Edytuj </Link>
                     <button className="btn btn-primary"  onClick={handleDelete}> Usuń</button>
                     </div>
-                }           
+                }  
+                <br/>
+                 <button className="btn btn-primary"  onClick={handleDownloadPdf}> Pobierz PDF</button>         
             </div>
            } 
         </div>

@@ -59,7 +59,10 @@ class RecipeService {
   getLikedRecipes(userId){
     return axios.get(API_URL + 'getlikedrecipes/'+userId,{ headers: authHeader()}).then((response)=>{ return response}).catch((error)=>{return error.response})
   }
-
+  getPdf(recipeId){
+    return axios.get(API_URL + 'pdf/'+recipeId,{ responseType: 'blob' }).then((response)=>{ return response}).catch((error)=>{return error.response})
+  }
+ 
 }
 
 export default new RecipeService();
