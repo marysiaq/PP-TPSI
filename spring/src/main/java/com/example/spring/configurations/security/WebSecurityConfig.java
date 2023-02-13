@@ -1,8 +1,8 @@
 package com.example.spring.configurations.security;
 
-import com.example.spring.configurations.security.jwt.AuthEntryPointJwt;
-import com.example.spring.configurations.security.jwt.AuthTokenFilter;
-import com.example.spring.configurations.security.services.UserDetailsServiceImpl;
+import com.example.spring.configurations.security.services.jwt.AuthEntryPointJwt;
+import com.example.spring.configurations.security.services.jwt.AuthTokenFilter;
+import com.example.spring.servicesimplementations.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,11 +62,7 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
       return authProvider;
   }
 
-//	@Bean
-//	@Override
-//	public AuthenticationManager authenticationManagerBean() throws Exception {
-//		return super.authenticationManagerBean();
-//	}
+
 	
   @Bean
   public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
@@ -78,17 +74,7 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder();
 	}
 
-//	@Override
-//	protected void configure(HttpSecurity http) throws Exception {
-//		http.cors().and().csrf().disable()
-//			.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-//			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-//			.authorizeRequests().antMatchers("/api/auth/**").permitAll()
-//			.antMatchers("/api/test/**").permitAll()
-//			.anyRequest().authenticated();
-//
-//		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-//	}
+
 
 
 	
@@ -98,7 +84,7 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
         .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
         .authorizeRequests().antMatchers("/api/auth/**").permitAll()
-        .antMatchers("/api/test/**").permitAll().antMatchers("/api/recipe/**").permitAll().antMatchers("/activate**").permitAll().antMatchers("/").permitAll().antMatchers("/api/user/**").permitAll().antMatchers("/api/ingredient/**").permitAll().antMatchers(WebSecurityConfig.AUTH_WHITELIST).anonymous().antMatchers("/h2-console/**","/h2-console/login.do**").permitAll()
+        .antMatchers("/api/test/**").permitAll().antMatchers("/api/recipe/**").permitAll().antMatchers("/api/unit/**").permitAll().antMatchers("/activate**").permitAll().antMatchers("/").permitAll().antMatchers("/api/user/**").permitAll().antMatchers("/api/ingredient/**").permitAll().antMatchers(WebSecurityConfig.AUTH_WHITELIST).anonymous().antMatchers("/h2-console/**","/h2-console/login.do**").permitAll()
         .anyRequest().authenticated();
 
 

@@ -1,4 +1,4 @@
-package com.example.spring.configurations.security.jwt;
+package com.example.spring.configurations.security.services.jwt;
 
 import java.io.IOException;
 import java.util.HashMap;

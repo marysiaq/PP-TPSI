@@ -7,8 +7,11 @@ import com.example.spring.models.Difficulty;
 import com.example.spring.models.ImageFile;
 import com.example.spring.models.Recipe;
 import com.example.spring.services.*;
+import com.lowagie.text.DocumentException;
+import io.github.classgraph.Resource;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +21,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,6 +43,9 @@ public class RecipeController {
 
     @Autowired
     private ImageFileService imageFileService;
+
+    @Autowired
+    private PdfService pdfService;
 
     private final ModelMapper modelMapper = new ModelMapper();
     @PostMapping("/create")
@@ -190,6 +199,25 @@ public class RecipeController {
             return modelMapper.map(e,RecipeDTO.class);
         }).collect(Collectors.toList());;
         return new ResponseEntity<>(dto,HttpStatus.OK);
+
+    }
+
+    @GetMapping("/pdf/{id}")
+    public ResponseEntity<byte[]> getPdf(@PathVariable Long id) throws RecipeNotFoundException, DocumentException, IOException {
+       //
+       // return pdf;
+        var pdf = pdfService.generate(recipeService.getRecipeById(id)).toByteArray();
+
+
+        HttpHeaders header = new HttpHeaders();
+        header.setContentType(MediaType.parseMediaType("application/pdf"));
+        header.setContentLength(pdf.length);
+        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=salaryslip.pdf");
+        header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        header.add("Pragma", "no-cache");
+        header.add("Expires", "0");
+
+        return new ResponseEntity<>(pdf, header, HttpStatus.OK);
 
     }
 

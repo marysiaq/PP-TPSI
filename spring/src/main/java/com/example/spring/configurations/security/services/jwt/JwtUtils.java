@@ -1,8 +1,8 @@
-package com.example.spring.configurations.security.jwt;
+package com.example.spring.configurations.security.services.jwt;
 
 import java.util.Date;
 
-import com.example.spring.configurations.security.services.UserDetailsImpl;
+import com.example.spring.servicesimplementations.UserDetailsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

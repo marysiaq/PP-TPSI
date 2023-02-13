@@ -54,12 +54,14 @@ public class RepositoriesInitializer {
             if(userRepository.findAll().isEmpty()){
                 User admin = new User("admin","admin@email.com",encoder.encode("admin@123"));
                 Set<Role> rolesadmin = new HashSet<>();
+                admin.setEnabled(true);
                 rolesadmin.add(roleRepository.findByName(ERole.ROLE_ADMIN).get());
                 admin.setRoles(rolesadmin);
                 userRepository.save(admin);
 
                 User adminuser = new User("AdminUser","adminuser@email.com",encoder.encode("adminuser@123"));
                 Set<Role> rolesadminuser = new HashSet<>();
+                adminuser.setEnabled(true);
                 rolesadmin.add(roleRepository.findByName(ERole.ROLE_ADMIN).get());
                 rolesadmin.add(roleRepository.findByName(ERole.ROLE_USER).get());
                 adminuser.setRoles(rolesadminuser);
@@ -68,6 +70,7 @@ public class RepositoriesInitializer {
 
                 User user1 = new User("user1","user1@email.com",encoder.encode("user1"));
                 Set<Role> rolesuser1 = new HashSet<>();
+                user1.setEnabled(true);
                 rolesuser1.add(roleRepository.findByName(ERole.ROLE_USER).get());
                 user1.setRoles(rolesuser1);
                 userRepository.save(user1);
@@ -77,12 +80,14 @@ public class RepositoriesInitializer {
                 Set<Role> rolesuser2 = new HashSet<>();
                 rolesuser2 .add(roleRepository.findByName(ERole.ROLE_USER).get());
                 user2.setRoles(rolesuser2);
+                user2.setEnabled(true);
                 userRepository.save(user2);
 
                 User user3 = new User("User3","user3@email.com",encoder.encode("user3"));
                 Set<Role> rolesuser3 = new HashSet<>();
                 rolesuser3.add(roleRepository.findByName(ERole.ROLE_USER).get());
                 user3.setRoles(rolesuser3);
+                user3.setEnabled(true);
                 userRepository.save(user3);
 
 

@@ -66,7 +66,9 @@ public class LikeServiceImplementation implements LikeService {
     public List<Recipe> getLikedRecipes(Long user_id) {
         var likes  = likeRepository.findLikeByUserId(user_id);
         if(likes.size()==0)return new ArrayList<>();
-        var recipes  = likes.stream().map(l ->recipeReposiory.findById(l.getRecipe().getId()).get()).collect(Collectors.toList());
+        var recipes  = likes.stream().map(l ->
+                recipeReposiory.findById(l.getRecipe().getId()).get()
+        ).collect(Collectors.toList());
         return recipes;
     }
 }

@@ -18,7 +18,7 @@ public class Category {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer id;
-    @NotEmpty
+    @NotEmpty(message = "Pole nie może być puste!")
     private String name;
 
     public Category(String name) {

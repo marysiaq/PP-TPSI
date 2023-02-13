@@ -21,8 +21,7 @@ public class Unit {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer id;
 
-    @NotBlank
-    @NotEmpty
+    @NotEmpty(message = "Pole nie może być puste!")
     private String name;
 
     public Unit(String name) {
